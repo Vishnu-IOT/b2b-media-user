@@ -1,0 +1,291 @@
+/* ---------- Arima, scoped to the Tamil script only ----------
+   unicode-range restricts this face to Tamil-block characters, so English
+   text keeps using --font-display / --font-body untouched, while any Tamil
+   text (typed in nav labels, page copy, or business-submitted content)
+   automatically renders in Arima — no JS or per-element switching needed. */
+@font-face {
+  font-family: "Arima Tamil";
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX1YTE-pQ.ttf) format("truetype");
+  unicode-range: U+0B80-0BFF, U+200C-200D;
+}
+@font-face {
+  font-family: "Arima Tamil";
+  font-style: normal;
+  font-weight: 200;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX14TA-pQ.ttf) format("truetype");
+  unicode-range: U+0B80-0BFF, U+200C-200D;
+}
+@font-face {
+  font-family: "Arima Tamil";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX1PzA-pQ.ttf) format("truetype");
+  unicode-range: U+0B80-0BFF, U+200C-200D;
+}
+@font-face {
+  font-family: "Arima Tamil";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX1YTA-pQ.ttf) format("truetype");
+  unicode-range: U+0B80-0BFF, U+200C-200D;
+}
+@font-face {
+  font-family: "Arima Tamil";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX1UzA-pQ.ttf) format("truetype");
+  unicode-range: U+0B80-0BFF, U+200C-200D;
+}
+@font-face {
+  font-family: "Arima Tamil";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX1vzc-pQ.ttf) format("truetype");
+  unicode-range: U+0B80-0BFF, U+200C-200D;
+}
+@font-face {
+  font-family: "Arima Tamil";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/arima/v7/neIWzCqmt4Aup_qE1nFWqxI1RZX1hjc-pQ.ttf) format("truetype");
+  unicode-range: U+0B80-0BFF, U+200C-200D;
+}
+
+:root {
+  /* Backgrounds */
+  --color-bg: #F7F6F3;          /* warm white */
+  --color-bg-soft: #EFEEEA;     /* soft gray */
+  --color-bg-alt: #FBFAF8;      /* off-white */
+  --color-surface: #FFFFFF;
+
+  /* Ink */
+  --color-ink: #1A2027;         /* deep charcoal/near-black */
+  --color-ink-soft: #3D4652;
+  --color-muted: #6B6F76;
+
+  /* Accent — muted blue, used sparingly */
+  --color-accent: #2F4B63;
+  --color-accent-soft: #7C97AC;
+  --color-accent-tint: #EAF0F4;
+
+  /* Secondary restrained accent */
+  --color-moss: #4B6153;
+  --color-line: #E2E0DB;
+
+  --color-live: #A63C32;
+  --color-success: #3E6B4F;
+
+  /* Type — Arima Tamil first: only Tamil-script glyphs use it, everything
+     else (Latin, numerals, punctuation) falls through to the fonts after it. */
+  --font-display: 'Arima Tamil', 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-body: 'Arima Tamil', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* Layout */
+  --container: 1240px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --shadow-sm: 0 1px 2px rgba(28,36,48,0.06);
+  --shadow-md: 0 8px 24px rgba(28,36,48,0.08);
+  --ease: cubic-bezier(.22,.61,.36,1);
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+img { max-width: 100%; display: block; }
+
+a { color: inherit; text-decoration: none; }
+
+button { font-family: inherit; cursor: pointer; }
+
+.container {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.eyebrow::before {
+  content: "";
+  width: 18px;
+  height: 1px;
+  background: var(--color-accent);
+}
+
+.section-heading {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--color-ink);
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+}
+
+.section-head-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.section-sub {
+  font-size: 16px;
+  color: var(--color-muted);
+  max-width: 480px;
+  margin-top: 10px;
+  line-height: 1.55;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 26px;
+  border-radius: 2px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  border: 1px solid transparent;
+  transition: all .25s var(--ease);
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: var(--color-ink);
+  color: var(--color-bg-alt);
+  border-color: var(--color-ink);
+}
+.btn-primary:hover { background: #0F151D; transform: translateY(-1px); }
+
+.btn-accent {
+  background: var(--color-accent);
+  color: #fff;
+  border-color: var(--color-accent);
+}
+.btn-accent:hover { background: #22384A; transform: translateY(-1px); }
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-ink);
+  border-color: var(--color-ink);
+}
+.btn-outline:hover { background: var(--color-ink); color: var(--color-bg-alt); }
+
+.btn-link {
+  padding: 0;
+  border: none;
+  background: none;
+  font-weight: 600;
+  color: var(--color-ink);
+  border-bottom: 1px solid var(--color-accent);
+  border-radius: 0;
+}
+.btn-link:hover { color: var(--color-accent); }
+
+.tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border: 1px solid var(--color-line);
+  color: var(--color-ink-soft);
+  background: var(--color-bg-alt);
+}
+
+.divider {
+  height: 1px;
+  background: var(--color-line);
+  border: none;
+  margin: 0;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity .7s var(--ease), transform .7s var(--ease);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-row {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding: 6px 2px 22px;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+}
+.scroll-row::-webkit-scrollbar { height: 6px; }
+.scroll-row::-webkit-scrollbar-thumb { background: var(--color-line); }
+.scroll-row > * { scroll-snap-align: start; flex-shrink: 0; }
+
+.page-shell { padding-top: 88px; min-height: 60vh; }
+
+/* ---------- Google Translate widget: strip Google's default chrome so it
+   sits quietly in the navbar instead of taking over the page. ---------- */
+.goog-te-banner-frame.skiptranslate,
+.goog-te-balloon-frame,
+#goog-gt-tt,
+.goog-tooltip,
+.goog-tooltip:hover,
+.goog-text-highlight {
+  display: none !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+body { top: 0 !important; position: static !important; }
+body > .skiptranslate { display: none !important; }
+
+#google_translate_element {
+  display: inline-flex;
+  align-items: center;
+}
+#google_translate_element .goog-te-gadget {
+  font-family: var(--font-body) !important;
+  font-size: 0 !important; /* hide the "Powered by" text node, keep the select */
+}
+#google_translate_element .goog-te-gadget .goog-te-combo {
+  font-size: 13px;
+  font-family: var(--font-body);
+  color: var(--color-ink-soft);
+  background: var(--color-bg-alt);
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+#google_translate_element img { display: none !important; }
