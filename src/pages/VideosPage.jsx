@@ -10,8 +10,8 @@ import "../styles/article.css";
 
 function VideoDetail({ id }) {
   const { data: video, loading, error, refetch } = useFetch(() => videosApi.getOne(id), [id]);
-  if (loading) return <div className="page-shell container" style={{ paddingTop: 140 }}><Loading /></div>;
-  if (error) return <div className="page-shell container" style={{ paddingTop: 140 }}><ErrorMessage error={error} onRetry={refetch} /></div>;
+  if (loading) return <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 24px)" }}><Loading /></div>;
+  if (error) return <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 24px)" }}><ErrorMessage error={error} onRetry={refetch} /></div>;
   if (!video) return null;
 
   const embed = video.type === "YOUTUBE" ? youtubeEmbedUrl(video.youtubeUrl) : null;
@@ -59,7 +59,7 @@ function VideoDetail({ id }) {
 
 function VideosIndex() {
   return (
-    <div className="page-shell container" style={{ paddingTop: 40, paddingBottom: 90 }}>
+    <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 28px)", paddingBottom: 90 }}>
       <p className="eyebrow">Business Videos</p>
       <h1 className="section-heading" style={{ fontSize: "clamp(30px,3.6vw,46px)", marginBottom: 30 }}>Watch the Business</h1>
       <VideosGrid />

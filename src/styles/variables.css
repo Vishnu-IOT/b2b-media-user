@@ -61,108 +61,113 @@
 }
 
 :root {
-  /* Backgrounds */
-  --color-bg: #F7F6F3;          /* warm white */
-  --color-bg-soft: #EFEEEA;     /* soft gray */
-  --color-bg-alt: #FBFAF8;      /* off-white */
+  /* Surfaces: white canvas like yourstory.com, soft grey for quiet bands */
+  --color-bg: #FFFFFF;
+  --color-bg-soft: #F5F5F5;
+  --color-bg-alt: #FAFAFA;
   --color-surface: #FFFFFF;
 
   /* Ink */
-  --color-ink: #1A2027;         /* deep charcoal/near-black */
-  --color-ink-soft: #3D4652;
-  --color-muted: #6B6F76;
+  --color-ink: #1A1A1A;
+  --color-ink-soft: #444444;
+  --color-muted: #767676;
 
-  /* Accent — muted blue, used sparingly */
-  --color-accent: #2F4B63;
-  --color-accent-soft: #7C97AC;
-  --color-accent-tint: #EAF0F4;
+  /* Brand red, used for category labels, links on hover and primary actions */
+  --color-accent: #E62E2D;
+  --color-accent-dark: #C41F1E;
+  --color-accent-soft: #F5A3A2;
+  --color-accent-tint: #FDECEC;
 
-  /* Secondary restrained accent */
-  --color-moss: #4B6153;
-  --color-line: #E2E0DB;
+  --color-moss: #2F7D4F;
+  --color-line: #E6E6E6;
+  --color-dark: #101114;
 
-  --color-live: #A63C32;
-  --color-success: #3E6B4F;
+  --color-live: #C41F1E;
+  --color-success: #2F7D4F;
 
-  /* Type — Arima Tamil first: only Tamil-script glyphs use it, everything
-     else (Latin, numerals, punctuation) falls through to the fonts after it. */
-  --font-display: 'Arima Tamil', 'Fraunces', Georgia, 'Times New Roman', serif;
-  --font-body: 'Arima Tamil', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Arima Tamil', 'Fira Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heavy: 'Poppins', 'Arima Tamil', 'Fira Sans', sans-serif;
+  --font-body: 'Arima Tamil', 'Fira Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
-  /* Layout */
   --container: 1240px;
-  --radius-sm: 4px;
+    --radius-sm: 4px;
   --radius-md: 8px;
-  --shadow-sm: 0 1px 2px rgba(28,36,48,0.06);
-  --shadow-md: 0 8px 24px rgba(28,36,48,0.08);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 10px 30px rgba(0,0,0,0.10);
   --ease: cubic-bezier(.22,.61,.36,1);
 }
 
 * { box-sizing: border-box; }
-
 html { scroll-behavior: smooth; }
-
 body {
   margin: 0;
   background: var(--color-bg);
   color: var(--color-ink);
   font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
-
+h1, h2 { text-wrap: balance; }
+h3, h4 { text-wrap: pretty; }
 img { max-width: 100%; display: block; }
-
 a { color: inherit; text-decoration: none; }
-
 button { font-family: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
 
-.container {
-  max-width: var(--container);
-  margin: 0 auto;
-  padding: 0 32px;
-}
+.container { --gutter: 24px; max-width: var(--container); margin: 0 auto; padding: 0 var(--gutter); }
 
-.eyebrow {
+/* Category label: small red text above a headline, as on yourstory.com */
+.eyebrow, .tag {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-accent);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-ink);
+  padding: 0;
+  border: none;
+  background: none;
 }
-
-.eyebrow::before {
+.eyebrow::before, .tag::before {
   content: "";
-  width: 18px;
-  height: 1px;
-  background: var(--color-accent);
+  width: 7px; height: 7px;
+  background: var(--color-ink);
+  flex-shrink: 0;
 }
 
+/* Section heading row: bold title, hairline underneath, red "view all" link */
 .section-heading {
   font-family: var(--font-display);
-  font-weight: 600;
+  font-weight: 700;
   color: var(--color-ink);
-  line-height: 1.08;
+  line-height: 1.15;
   letter-spacing: -0.01em;
+  margin: 0;
 }
-
 .section-head-row {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
   gap: 24px;
-  margin-bottom: 40px;
+  margin-bottom: 28px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--color-line);
 }
-
+.section-head-row .eyebrow { display: none; }
+/* When the row is itself the padded container, draw the rule inside the gutters */
+.container.section-head-row { border-bottom: none; position: relative; }
+.container.section-head-row::after {
+  content: ""; position: absolute; left: var(--gutter); right: var(--gutter); bottom: 0;
+  height: 1px; background: var(--color-line);
+}
 .section-sub {
-  font-size: 16px;
+  font-size: 14.5px;
   color: var(--color-muted);
-  max-width: 480px;
-  margin-top: 10px;
-  line-height: 1.55;
+  max-width: 520px;
+  margin: 6px 0 0;
+  line-height: 1.5;
 }
 
 .btn {
@@ -170,93 +175,55 @@ button { font-family: inherit; cursor: pointer; }
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 13px 26px;
-  border-radius: 2px;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.01em;
+  padding: 11px 24px;
+  border-radius: 0;
+  font-size: 15px;
+  font-weight: 500;
   border: 1px solid transparent;
-  transition: all .25s var(--ease);
+  transition: background .2s var(--ease), color .2s var(--ease), border-color .2s var(--ease), transform .1s;
   white-space: nowrap;
 }
-
-.btn-primary {
-  background: var(--color-ink);
-  color: var(--color-bg-alt);
-  border-color: var(--color-ink);
-}
-.btn-primary:hover { background: #0F151D; transform: translateY(-1px); }
-
-.btn-accent {
-  background: var(--color-accent);
-  color: #fff;
-  border-color: var(--color-accent);
-}
-.btn-accent:hover { background: #22384A; transform: translateY(-1px); }
-
-.btn-outline {
-  background: transparent;
-  color: var(--color-ink);
-  border-color: var(--color-ink);
-}
-.btn-outline:hover { background: var(--color-ink); color: var(--color-bg-alt); }
+.btn:active { transform: scale(0.98); }
+.btn-primary { background: var(--color-ink); color: #fff; border-color: var(--color-ink); }
+.btn-primary:hover { background: #000; }
+.btn-accent { background: var(--color-accent); color: #fff; border-color: var(--color-accent); }
+.btn-accent:hover { background: var(--color-accent-dark); border-color: var(--color-accent-dark); }
+.btn-outline { background: #fff; color: var(--color-ink); border-color: var(--color-ink); }
+.btn-outline:hover { border-color: var(--color-ink); background: var(--color-ink); color: #fff; }
 
 .btn-link {
   padding: 0;
   border: none;
   background: none;
+  font-size: 14px;
   font-weight: 600;
-  color: var(--color-ink);
-  border-bottom: 1px solid var(--color-accent);
+  color: var(--color-accent);
   border-radius: 0;
+  white-space: nowrap;
 }
-.btn-link:hover { color: var(--color-accent); }
+.btn-link:hover { color: var(--color-accent-dark); text-decoration: underline; text-underline-offset: 3px; }
 
-.tag {
-  display: inline-block;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 5px 10px;
-  border: 1px solid var(--color-line);
-  color: var(--color-ink-soft);
-  background: var(--color-bg-alt);
-}
 
-.divider {
-  height: 1px;
-  background: var(--color-line);
-  border: none;
-  margin: 0;
-}
+.divider { height: 1px; background: var(--color-line); border: none; margin: 0; }
 
-.reveal {
-  opacity: 0;
-  transform: translateY(24px);
-  transition: opacity .7s var(--ease), transform .7s var(--ease);
-}
-.reveal.is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
+.reveal { opacity: 0; transform: translateY(12px); transition: opacity .5s var(--ease), transform .5s var(--ease); }
+.reveal.is-visible { opacity: 1; transform: translateY(0); }
 
 .scroll-row {
   display: flex;
-  gap: 20px;
+  gap: 24px;
   overflow-x: auto;
-  padding: 6px 2px 22px;
+  padding: 4px 2px 20px;
   scroll-snap-type: x proximity;
   -webkit-overflow-scrolling: touch;
 }
 .scroll-row::-webkit-scrollbar { height: 6px; }
-.scroll-row::-webkit-scrollbar-thumb { background: var(--color-line); }
+.scroll-row::-webkit-scrollbar-thumb { background: #D5D5D5; border-radius: 3px; }
 .scroll-row > * { scroll-snap-align: start; flex-shrink: 0; }
 
-.page-shell { padding-top: 88px; min-height: 60vh; }
+.page-shell { padding-top: calc(var(--header-h) + 24px); min-height: 60vh; }
 
-/* ---------- Google Translate widget: strip Google's default chrome so it
-   sits quietly in the navbar instead of taking over the page. ---------- */
+/* ---------- Google Translate widget chrome ---------- */
 .goog-te-banner-frame.skiptranslate,
 .goog-te-balloon-frame,
 #goog-gt-tt,
@@ -270,14 +237,8 @@ button { font-family: inherit; cursor: pointer; }
 body { top: 0 !important; position: static !important; }
 body > .skiptranslate { display: none !important; }
 
-#google_translate_element {
-  display: inline-flex;
-  align-items: center;
-}
-#google_translate_element .goog-te-gadget {
-  font-family: var(--font-body) !important;
-  font-size: 0 !important; /* hide the "Powered by" text node, keep the select */
-}
+#google_translate_element { display: inline-flex; align-items: center; }
+#google_translate_element .goog-te-gadget { font-family: var(--font-body) !important; font-size: 0 !important; }
 #google_translate_element .goog-te-gadget .goog-te-combo {
   font-size: 13px;
   font-family: var(--font-body);

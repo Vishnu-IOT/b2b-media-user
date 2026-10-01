@@ -14,6 +14,7 @@ export default function NewsletterForm({ variant = "footer" }) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState("idle"); // idle | sending | success | error
   const [errorMsg, setErrorMsg] = useState("");
+  const [okMsg, setOkMsg] = useState("");
 
   const submit = async (e) => {
     e.preventDefault();
@@ -24,7 +25,9 @@ export default function NewsletterForm({ variant = "footer" }) {
     }
     setStatus("sending");
     try {
-      await newsletterApi.subscribe(email);
+      const res = await newsletterApi.subscribe(email);
+      // The API answers { email, alreadySubscribed } in the same single step: no OTP, no second screen.
+      setOkMsg(res && res.alreadySubscribed ? t("newsletter.already") : t("newsletter.success"));
       setStatus("success");
       setEmail("");
     } catch (err) {
@@ -37,7 +40,7 @@ export default function NewsletterForm({ variant = "footer" }) {
     return (
       <form className="newsletter newsletter--navbar" onSubmit={submit}>
         {status === "success" ? (
-          <span className="newsletter__ok">{t("newsletter.success")}</span>
+          <span className="newsletter__ok">{okMsg}</span>
         ) : (
           <>
             <input
@@ -58,13 +61,38 @@ export default function NewsletterForm({ variant = "footer" }) {
     );
   }
 
+  if (variant === "band" || variant === "card") {
+    return (
+      <div className={`newsletter newsletter--${variant}`}>
+        {status === "success" ? (
+          <p className="newsletter__ok">{okMsg}</p>
+        ) : (
+          <form onSubmit={submit} className="newsletter__row">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder={t("newsletter.placeholder")}
+              className="newsletter__input"
+              aria-label={t("newsletter.placeholder")}
+            />
+            <button type="submit" className={`btn ${variant === "card" ? "btn-primary" : "btn-accent"}`} disabled={status === "sending"}>
+              {status === "sending" ? t("newsletter.sending") : t("newsletter.button")}
+            </button>
+          </form>
+        )}
+        {status === "error" && <p className="newsletter__err">{errorMsg}</p>}
+      </div>
+    );
+  }
+
   if (variant === "dropdown") {
     return (
       <div className="newsletter newsletter--dropdown">
         <h4>{t("newsletter.heading")}</h4>
         <p>{t("newsletter.blurb")}</p>
         {status === "success" ? (
-          <p className="newsletter__ok">{t("newsletter.success")}</p>
+          <p className="newsletter__ok">{okMsg}</p>
         ) : (
           <form onSubmit={submit} className="newsletter__row">
             <input
@@ -103,7 +131,7 @@ export default function NewsletterForm({ variant = "footer" }) {
           {status === "sending" ? t("newsletter.sending") : t("newsletter.button")}
         </button>
       </form>
-      {status === "success" && <p className="newsletter__ok">{t("newsletter.success")}</p>}
+      {status === "success" && <p className="newsletter__ok">{okMsg}</p>}
       {status === "error" && <p className="newsletter__err">{errorMsg}</p>}
     </div>
   );

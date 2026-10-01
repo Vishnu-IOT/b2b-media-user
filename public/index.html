@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#F7F3EC" />
+    <meta name="theme-color" content="#FFFFFF" />
     <meta
       name="description"
       content="Local Business Network — discover local businesses, products, stories, B2B requirements, events and knowledge in one place."
@@ -11,28 +11,49 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <title>Vartha Business Network</title>
 
     <!--
-      Google Website Translator: translates the whole rendered page,
-      including dynamic post content, into whichever language is selected.
-      We default first-time visitors to Tamil by pre-setting the "googtrans"
-      cookie before the widget boots; once someone picks a language from the
-      dropdown, their choice is remembered on future visits.
+      Google Website Translator: translates content that comes back from the API
+      (stories, products, resource categories...) in BOTH directions.
+
+      The widget can only translate *away from* the language it believes the page is
+      written in, so we tell it the opposite of what the visitor asked for:
+        viewing Tamil   -> cookie /en/ta, page treated as English  (English text -> Tamil)
+        viewing English -> cookie /ta/en, page treated as Tamil    (Tamil text   -> English)
+      Text that is already in the target language passes through untouched, so content
+      written in either language ends up correct. Static UI text is handled separately
+      by /i18n/*.json (see LanguageContext.jsx).
     -->
     <script type="text/javascript">
       (function () {
-        if (!document.cookie.includes("googtrans=")) {
-          document.cookie = "googtrans=/en/ta;path=/";
-        }
+        // Expire "googtrans" on every scope it might live in. On production Google
+        // also writes a domain-scoped copy (.yourdomain.com) that a plain host-only
+        // write cannot overwrite, so always wipe them all before writing a new value.
+        window.__clearGoogTrans = function () {
+          var host = location.hostname;
+          var parts = host.split(".");
+          var domains = [undefined, host, "." + host];
+          for (var i = 1; i < parts.length - 1; i++) domains.push("." + parts.slice(i).join("."));
+          domains.forEach(function (d) {
+            document.cookie =
+              "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/" + (d ? "; domain=" + d : "");
+          });
+        };
+        var saved = null;
+        try { saved = localStorage.getItem("vartha_lang"); } catch (e) {}
+        var lang = saved === "en" ? "en" : "ta"; // Tamil is the default for first-time visitors
+        window.__clearGoogTrans();
+        document.cookie = (lang === "en" ? "googtrans=/ta/en" : "googtrans=/en/ta") + ";path=/";
+        window.__pageLang = lang === "en" ? "ta" : "en";
       })();
       function googleTranslateElementInit() {
         new window.google.translate.TranslateElement(
           {
-            pageLanguage: "en",
+            pageLanguage: window.__pageLang || "en",
             includedLanguages: "en,ta",
             layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
             autoDisplay: false,
@@ -49,5 +70,7 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+    <!-- Mount point the translate widget needs (kept off-screen, not display:none) -->
+    <div id="google_translate_element" class="notranslate" style="position:absolute;left:-9999px;top:0;width:1px;height:1px;overflow:hidden"></div>
   </body>
 </html>

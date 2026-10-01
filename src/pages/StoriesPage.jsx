@@ -35,8 +35,8 @@ function StoryDetail({ id }) {
   const { data: story, loading, error, refetch } = useFetch(() => storiesApi.getOne(id), [id]);
   const { data: more } = useFetch(() => storiesApi.list({ limit: 6 }), []);
 
-  if (loading) return <div className="page-shell container" style={{ paddingTop: 140 }}><Loading /></div>;
-  if (error) return <div className="page-shell container" style={{ paddingTop: 140 }}><ErrorMessage error={error} onRetry={refetch} /></div>;
+  if (loading) return <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 24px)" }}><Loading /></div>;
+  if (error) return <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 24px)" }}><ErrorMessage error={error} onRetry={refetch} /></div>;
   if (!story) return null;
 
   const paragraphs = toParagraphs(story.content);
@@ -89,7 +89,7 @@ function StoriesIndex() {
   const { data, loading, error, refetch } = useFetch(() => storiesApi.list({ limit: 24 }), []);
   const items = (data && data.items) || [];
   return (
-    <div className="page-shell container" style={{ paddingTop: 40, paddingBottom: 90 }}>
+    <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 28px)", paddingBottom: 90 }}>
       <p className="eyebrow">{t("stories.eyebrow")}</p>
       <h1 className="section-heading" style={{ fontSize: "clamp(30px,3.6vw,46px)", marginBottom: 30 }}>{t("stories.title")}</h1>
       {loading && <Loading />}

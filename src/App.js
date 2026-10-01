@@ -19,8 +19,12 @@ import CommunityPage from "./pages/CommunityPage";
 import QuestionDetailPage from "./pages/QuestionDetailPage";
 import ResourcesPage from "./pages/ResourcesPage";
 import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
+import RegisterPage, { VerifyEmailPage } from "./pages/RegisterPage";
+import UnsubscribePage from "./pages/UnsubscribePage";
+import SearchPage from "./pages/SearchPage";
+import BusinessesPage from "./pages/BusinessesPage";
 import AccountPage from "./pages/AccountPage";
+import DashboardPage from "./pages/DashboardPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 export default function App() {
@@ -34,6 +38,8 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
 
+            <Route path="/search" element={<SearchPage />} />
+            <Route path="/businesses" element={<BusinessesPage />} />
             <Route
               path="/businesses/:idOrSlug"
               element={<BusinessProfilePage />}
@@ -65,11 +71,22 @@ export default function App() {
 
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/verify-email" element={<VerifyEmailPage />} />
+            <Route path="/unsubscribe" element={<UnsubscribePage />} />
+            <Route path="/newsletter/unsubscribe" element={<UnsubscribePage />} />
             <Route
               path="/account"
               element={
                 <ProtectedRoute>
                   <AccountPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <DashboardPage />
                 </ProtectedRoute>
               }
             />

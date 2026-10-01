@@ -3,7 +3,7 @@ import React, { useState } from "react";
 export default function JoinPage() {
   const [submitted, setSubmitted] = useState(false);
   return (
-    <div className="page-shell container" style={{ paddingTop: 60, paddingBottom: 100, maxWidth: 620 }}>
+    <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 52px)", paddingBottom: 100, maxWidth: 620 }}>
       <p className="eyebrow">Join the Network</p>
       <h1 className="section-heading" style={{ fontSize: "clamp(28px,3.6vw,44px)", marginBottom: 16 }}>
         Bring Your Business to Vartha

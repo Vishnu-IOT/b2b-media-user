@@ -1,8 +1,23 @@
 import React from "react";
 import "./state.css";
 
+/* Skeleton placeholders keep the layout steady while data loads. */
 export function Loading({ label = "Loading…" }) {
-  return <div className="state-msg state-msg--loading">{label}</div>;
+  return (
+    <div className="state-msg state-msg--loading" role="status" aria-live="polite">
+      <span className="sr-only">{label}</span>
+      <div className="skeleton-row" aria-hidden="true">
+        {[0, 1, 2].map((i) => (
+          <div className="skeleton-card" key={i}>
+            <div className="skeleton skeleton--img" />
+            <div className="skeleton skeleton--line skeleton--short" />
+            <div className="skeleton skeleton--line" />
+            <div className="skeleton skeleton--line skeleton--mid" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export function ErrorMessage({ error, onRetry }) {

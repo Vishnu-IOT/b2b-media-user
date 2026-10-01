@@ -7,7 +7,7 @@ export default function ProtectedRoute({ children, roles }) {
   const { user, loading } = useAuth();
   const location = useLocation();
 
-  if (loading) return <div className="page-shell container" style={{ paddingTop: 140 }}><Loading /></div>;
+  if (loading) return <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 24px)" }}><Loading /></div>;
   if (!user) return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   if (roles && !roles.includes(user.role)) return <Navigate to="/" replace />;
   return children;

@@ -55,14 +55,14 @@ export default function QuestionDetailPage() {
   const { id } = useParams();
   const { data: question, loading, error, refetch } = useFetch(() => questionsApi.getOne(id), [id]);
 
-  if (loading) return <div className="page-shell container" style={{ paddingTop: 140 }}><Loading /></div>;
-  if (error) return <div className="page-shell container" style={{ paddingTop: 140 }}><ErrorMessage error={error} onRetry={refetch} /></div>;
+  if (loading) return <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 24px)" }}><Loading /></div>;
+  if (error) return <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 24px)" }}><ErrorMessage error={error} onRetry={refetch} /></div>;
   if (!question) return null;
 
   const answers = question.answers || [];
 
   return (
-    <div className="page-shell container" style={{ paddingTop: 60, paddingBottom: 90, maxWidth: 760 }}>
+    <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 52px)", paddingBottom: 90, maxWidth: 760 }}>
       <Link to="/community" className="btn-link" style={{ marginBottom: 26, display: "inline-block" }}>← Back to Community</Link>
       <div className="qa-card__meta">
         {question.category && <span className="tag">{question.category}</span>}

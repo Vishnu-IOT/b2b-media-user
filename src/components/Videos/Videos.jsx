@@ -20,17 +20,32 @@ export function VideosGrid({ limit }) {
 }
 
 export default function VideosPreview() {
+  const { data, loading, error, refetch } = useFetch(() => videosApi.list({ limit: 4 }), []);
+  const items = (data && data.items) || [];
+  const [lead, ...side] = items;
   return (
     <section className="videos-section">
       <div className="container section-head-row">
         <div>
           <p className="eyebrow">Business Videos</p>
-          <h2 className="section-heading" style={{ fontSize: "clamp(26px,2.8vw,36px)" }}>Watch the Business</h2>
+          <h2 className="section-heading" style={{ fontSize: "clamp(24px,2.6vw,30px)" }}>Watch the Business</h2>
         </div>
         <Link to="/videos" className="btn-link">Browse all videos →</Link>
       </div>
       <div className="container">
-        <VideosGrid limit={3} />
+        {loading && <Loading />}
+        {error && <ErrorMessage error={error} onRetry={refetch} />}
+        {!loading && !error && !items.length && <Empty>No videos published yet.</Empty>}
+        {!loading && !error && lead && (
+          <div className="videos-showcase">
+            <div className="videos-lead"><VideoCard video={lead} /></div>
+            {side.length > 0 && (
+              <div className="videos-side">
+                {side.map((v) => <VideoCard video={v} key={v.id} />)}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </section>
   );

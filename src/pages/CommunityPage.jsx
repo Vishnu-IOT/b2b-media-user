@@ -5,7 +5,7 @@ import AskQuestionForm from "../components/BusinessQA/AskQuestionForm";
 export default function CommunityPage() {
   const [refreshKey, setRefreshKey] = React.useState(0);
   return (
-    <div className="page-shell container" style={{ paddingTop: 40, paddingBottom: 90, maxWidth: 800 }}>
+    <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 28px)", paddingBottom: 90, maxWidth: 800 }}>
       <p className="eyebrow">Business Community</p>
       <h1 className="section-heading" style={{ fontSize: "clamp(30px,3.6vw,46px)", marginBottom: 10 }}>Ask the Business Community</h1>
       <p className="section-sub" style={{ marginBottom: 26 }}>

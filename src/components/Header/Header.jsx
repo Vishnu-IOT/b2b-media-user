@@ -39,8 +39,16 @@ const MEGA_IMAGES = {
   Business: "/images/mega-menu/business1.jpg",
   Community: "/images/mega-menu/community1.avif",
   Resources: "/images/mega-menu/resources1.webp",
-  Newsletter: "/images/mega-menu/newsletter1.avif",
 };
+
+function SearchIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+      <circle cx="11" cy="11" r="7" />
+      <path d="M20 20l-3.5-3.5" />
+    </svg>
+  );
+}
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -88,7 +96,18 @@ export default function Header() {
         className={`site-header notranslate ${scrolled ? "is-scrolled" : ""} ${openPanel ? "has-panel-open" : ""}`}
         onMouseLeave={scheduleClose}
       >
-        <div className="site-header__inner container">
+        {/* Brand row: menu, centred wordmark, account + search (collapses on scroll) */}
+        <div className="site-header__brandrow container">
+          <button
+            className={`site-header__burger ${menuOpen ? "is-open" : ""}`}
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-label="Menu"
+          >
+            <span />
+            <span />
+            <span />
+          </button>
+
           <Link
             to="/"
             className="site-header__logo"
@@ -97,30 +116,8 @@ export default function Header() {
               setOpenPanel(null);
             }}
           >
-            <span className="site-header__logo-mark">V</span>
-            <span className="site-header__logo-text notranslate">Vartha</span>
+            <span className="site-header__logo-text notranslate">VARTHA</span>
           </Link>
-
-          <nav className="site-header__nav">
-            <NavLink
-              to="/"
-              className={({ isActive }) =>
-                "site-header__link" + (isActive ? " is-active" : "")
-              }
-            >
-              {t("nav.home")}
-            </NavLink>
-            {TOP_LEVEL.map((label) => (
-              <button
-                key={label}
-                className={`site-header__link site-header__link--btn ${openPanel === label ? "is-active" : ""}`}
-                onMouseEnter={() => openNow(label)}
-                onClick={() => setOpenPanel(openPanel === label ? null : label)}
-              >
-                {t(`nav.${label.toLowerCase()}`)} <span className="site-header__caret">▾</span>
-              </button>
-            ))}
-          </nav>
 
           <div className="site-header__actions">
             <button
@@ -134,28 +131,34 @@ export default function Header() {
             {/* <div id="google_translate_element" className="notranslate" aria-label="Translate this page" /> */}
             {user ? (
               <>
-                <Link to="/account" className="site-header__text-link">
+                <Link to="/account" className="site-header__signin">
                   {t("nav.myAccount")}
                 </Link>
-                <button className="site-header__text-link site-header-logout" onClick={logout}>
+                <button className="site-header__signin site-header-logout" onClick={logout}>
                   {t("nav.logout")}
                 </button>
               </>
             ) : (
               <>
-                <Link to="/login" className="site-header__text-link">
+                <Link to="/login" className="site-header__signin">
                   {t("nav.login")}
                 </Link>
-                <Link
-                  to="/register"
-                  className="btn btn-accent site-header__join"
-                >
+                <Link to="/register" className="site-header__join">
                   {t("nav.join")}
                 </Link>
               </>
             )}
+            <Link to="/search" className="site-header__search" aria-label="Search">
+              <SearchIcon />
+            </Link>
+          </div>
+        </div>
+
+        {/* Navigation row with hairlines (stays visible when scrolled) */}
+        <div className="site-header__navrow">
+          <div className="container site-header__navrow-inner">
             <button
-              className={`site-header__burger ${menuOpen ? "is-open" : ""}`}
+              className={`site-header__burger site-header__burger--compact ${menuOpen ? "is-open" : ""}`}
               onClick={() => setMenuOpen((v) => !v)}
               aria-label="Menu"
             >
@@ -163,6 +166,31 @@ export default function Header() {
               <span />
               <span />
             </button>
+
+            <nav className="site-header__nav">
+              <NavLink
+                to="/"
+                className={({ isActive }) =>
+                  "site-header__link" + (isActive ? " is-active" : "")
+                }
+              >
+                {t("nav.home")}
+              </NavLink>
+              {TOP_LEVEL.map((label) => (
+                <button
+                  key={label}
+                  className={`site-header__link site-header__link--btn ${openPanel === label ? "is-active" : ""}`}
+                  onMouseEnter={() => openNow(label)}
+                  onClick={() => setOpenPanel(openPanel === label ? null : label)}
+                >
+                  {t(`nav.${label.toLowerCase()}`)} <span className="site-header__caret">▾</span>
+                </button>
+              ))}
+            </nav>
+
+            <Link to="/search" className="site-header__search-mini" aria-label="Search">
+              <SearchIcon />
+            </Link>
           </div>
         </div>
 

@@ -7,7 +7,7 @@
 }
 .search-overlay__backdrop {
   position: absolute; inset: 0;
-  background: rgba(28,36,48,0.55);
+  background: rgba(0,0,0,0.55);
   border: none;
   animation: fadeIn .2s ease;
 }
@@ -15,8 +15,8 @@
   position: relative;
   width: min(720px, 92vw);
   margin-top: 10vh;
-  background: var(--color-bg-alt);
-  border: 1px solid var(--color-line);
+  background: #fff;
+  border-radius: 0;
   box-shadow: var(--shadow-md);
   animation: slideDown .25s var(--ease);
   max-height: 74vh;
@@ -67,9 +67,10 @@
 .search-overlay__chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
 .search-overlay__chips button {
   border: 1px solid var(--color-line);
-  background: var(--color-bg-alt);
-  padding: 8px 14px;
+  background: #fff;
+  border-radius: 999px;
+  padding: 7px 14px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
 }
 .search-overlay__chips button:hover { border-color: var(--color-accent); color: var(--color-accent); }

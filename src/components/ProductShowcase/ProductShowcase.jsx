@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import useFetch from "../../hooks/useFetch";
 import { productsApi } from "../../api/endpoints";
 import ProductCard from "./ProductCard";
+import Carousel from "../common/Carousel";
 import { Loading, ErrorMessage, Empty } from "../common/StateMessage";
 import "./products.css";
 
@@ -24,9 +25,9 @@ export default function ProductShowcase() {
         {error && <ErrorMessage error={error} onRetry={refetch} />}
         {!loading && !error && !items.length && <Empty>No products published yet.</Empty>}
         {!loading && !error && items.length > 0 && (
-          <div className="scroll-row products-scroll">
+          <Carousel className="products-scroll">
             {items.map((p) => <ProductCard product={p} key={p.id} />)}
-          </div>
+          </Carousel>
         )}
       </div>
     </section>

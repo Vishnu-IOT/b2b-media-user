@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import useFetch from "../../hooks/useFetch";
 import { strategiesApi } from "../../api/endpoints";
 import StrategyCard from "./StrategyCard";
+import Carousel from "../common/Carousel";
 import { Loading, ErrorMessage, Empty } from "../common/StateMessage";
 import "./strategies.css";
 
@@ -36,9 +37,9 @@ export default function StrategiesPreview() {
         {error && <ErrorMessage error={error} onRetry={refetch} />}
         {!loading && !error && !items.length && <Empty>No strategies published yet.</Empty>}
         {!loading && !error && items.length > 0 && (
-          <div className="scroll-row strategies-scroll">
+          <Carousel className="strategies-scroll">
             {items.map((s) => <StrategyCard strategy={s} key={s.id} />)}
-          </div>
+          </Carousel>
         )}
       </div>
     </section>

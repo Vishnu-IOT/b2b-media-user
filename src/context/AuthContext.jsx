@@ -30,13 +30,23 @@ export function AuthProvider({ children }) {
     return u;
   };
 
+  // Signup step 1. The account is created unverified and NO token is returned,
+  // so we do not log the user in here. Resolves to { email }.
   const register = async (name, email, password) => {
     setError(null);
-    const { user: u, token } = await authApi.register({ name, email, password });
+    return authApi.register({ name, email, password });
+  };
+
+  // Signup step 2. The token is stored only after the OTP is accepted.
+  const verifyOtp = async (email, otp) => {
+    setError(null);
+    const { user: u, token } = await authApi.verifyOtp({ email, otp });
     localStorage.setItem(TOKEN_KEY, token);
     setUser(u);
     return u;
   };
+
+  const resendOtp = (email) => authApi.resendOtp({ email });
 
   const logout = () => {
     localStorage.removeItem(TOKEN_KEY);
@@ -44,7 +54,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, loading, error, setError, login, register, logout }}>
+    <AuthContext.Provider value={{ user, setUser, loading, error, setError, login, register, verifyOtp, resendOtp, logout }}>
       {children}
     </AuthContext.Provider>
   );

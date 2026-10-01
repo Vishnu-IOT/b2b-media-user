@@ -4,7 +4,7 @@ import { BusinessDirectoryFull } from "../components/BusinessDirectory/BusinessD
 export default function BusinessesPage() {
   return (
     <div className="page-shell container">
-      <div style={{ paddingTop: 40 }}>
+      <div style={{ paddingTop: "calc(var(--header-h) + 28px)" }}>
         <p className="eyebrow">Business Discovery</p>
         <h1 className="section-heading" style={{ fontSize: "clamp(30px,3.6vw,46px)" }}>Discover Local Businesses</h1>
         <p className="section-sub">Filter by industry and location to find manufacturers, suppliers and service providers near you.</p>

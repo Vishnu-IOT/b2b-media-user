@@ -25,6 +25,10 @@ function readGoogTransCookie() {
  * cookie, then reloads the page so both boot up already agreeing — this is
  * far more reliable than trying to flip Google's live translation in place,
  * which is known to be flaky inside a React SPA.
+ *
+ * Translation runs in BOTH directions. Google's widget only translates away from the
+ * language it thinks the page is in, so index.html declares the page as the OPPOSITE of
+ * the target (see the comment there): English view = Tamil->English, Tamil view = English->Tamil.
  */
 export function LanguageProvider({ children }) {
   const [lang, setLang] = useState(() => {
@@ -68,7 +72,12 @@ export function LanguageProvider({ children }) {
     if (newLang !== "en" && newLang !== "ta") return;
     if (newLang === lang) return;
     localStorage.setItem(STORAGE_KEY, newLang);
-    document.cookie = `googtrans=/en/${newLang};path=/`;
+    // Always wipe every copy of the cookie first (host + parent domains), otherwise
+    // a stale domain-scoped value from Google wins in production.
+    if (typeof window.__clearGoogTrans === "function") window.__clearGoogTrans();
+    // Two-way translation: the cookie is "/<assumed source>/<target>". Asking for Tamil
+    // translates English -> Tamil; asking for English translates Tamil -> English.
+    document.cookie = (newLang === "en" ? "googtrans=/ta/en" : "googtrans=/en/ta") + ";path=/";
     window.location.reload();
   };
 

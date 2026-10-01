@@ -1,0 +1,18 @@
+.unsub { display: flex; justify-content: center; padding-bottom: 90px; }
+.unsub__card {
+  width: min(520px, 100%); margin-top: 24px; padding: 56px 40px 48px;
+  border: 1px solid var(--color-line); background: #fff; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  box-shadow: 0 18px 50px rgba(0,0,0,.08);
+}
+.unsub__card h1 { font-family: var(--font-display); font-weight: 700; font-size: 28px; letter-spacing: -0.02em; margin: 6px 0 0; }
+.unsub__card p { margin: 0 0 12px; font-size: 15px; line-height: 1.6; color: var(--color-muted); max-width: 400px; }
+.unsub__icon { width: 84px; height: 84px; }
+.unsub__icon circle { fill: none; stroke-width: 4; stroke-dasharray: 226; stroke-dashoffset: 226; animation: unsubDraw .7s var(--ease) forwards; }
+.unsub__icon path { fill: none; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 60; stroke-dashoffset: 60; animation: unsubDraw .45s .5s var(--ease) forwards; }
+.unsub__icon--ok circle, .unsub__icon--ok path { stroke: var(--color-success); }
+.unsub__icon--err circle, .unsub__icon--err path { stroke: var(--color-live); }
+@keyframes unsubDraw { to { stroke-dashoffset: 0; } }
+.unsub__spinner { width: 40px; height: 40px; border: 3px solid #E4E4E4; border-top-color: var(--color-ink); border-radius: 50%; animation: unsubSpin .8s linear infinite; }
+@keyframes unsubSpin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .unsub__spinner { animation-duration: 2s; } }

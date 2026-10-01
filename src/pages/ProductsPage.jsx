@@ -11,8 +11,8 @@ import "../styles/article.css";
 
 function ProductDetail({ slug }) {
   const { data: product, loading, error, refetch } = useFetch(() => productsApi.getOne(slug), [slug]);
-  if (loading) return <div className="page-shell container" style={{ paddingTop: 140 }}><Loading /></div>;
-  if (error) return <div className="page-shell container" style={{ paddingTop: 140 }}><ErrorMessage error={error} onRetry={refetch} /></div>;
+  if (loading) return <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 24px)" }}><Loading /></div>;
+  if (error) return <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 24px)" }}><ErrorMessage error={error} onRetry={refetch} /></div>;
   if (!product) return null;
 
   const upcoming = product.launchDate && new Date(product.launchDate) > new Date();
@@ -55,7 +55,7 @@ function ProductsIndex() {
   const { data, loading, error, refetch } = useFetch(() => productsApi.list({ limit: 24 }), []);
   const items = (data && data.items) || [];
   return (
-    <div className="page-shell container" style={{ paddingTop: 40, paddingBottom: 90 }}>
+    <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 28px)", paddingBottom: 90 }}>
       <p className="eyebrow">Product Discovery</p>
       <h1 className="section-heading" style={{ fontSize: "clamp(30px,3.6vw,46px)", marginBottom: 30 }}>New Products</h1>
       {loading && <Loading />}

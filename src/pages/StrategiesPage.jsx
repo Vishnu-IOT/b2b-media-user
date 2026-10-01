@@ -13,8 +13,8 @@ import "../styles/article.css";
 function StrategyDetail({ id }) {
   const { t } = useLanguage();
   const { data: strategy, loading, error, refetch } = useFetch(() => strategiesApi.getOne(id), [id]);
-  if (loading) return <div className="page-shell container" style={{ paddingTop: 140 }}><Loading /></div>;
-  if (error) return <div className="page-shell container" style={{ paddingTop: 140 }}><ErrorMessage error={error} onRetry={refetch} /></div>;
+  if (loading) return <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 24px)" }}><Loading /></div>;
+  if (error) return <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 24px)" }}><ErrorMessage error={error} onRetry={refetch} /></div>;
   if (!strategy) return null;
 
   const paragraphs = toParagraphs(strategy.content);
@@ -57,7 +57,7 @@ function StrategyDetail({ id }) {
 function StrategiesIndex() {
   const { t } = useLanguage();
   return (
-    <div className="page-shell container" style={{ paddingTop: 40, paddingBottom: 90 }}>
+    <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 28px)", paddingBottom: 90 }}>
       <p className="eyebrow">{t("strategies.eyebrow")}</p>
       <h1 className="section-heading" style={{ fontSize: "clamp(30px,3.6vw,46px)", marginBottom: 30 }}>{t("strategies.title")}</h1>
       <StrategiesGrid />

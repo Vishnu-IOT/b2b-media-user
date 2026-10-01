@@ -37,8 +37,8 @@ function AchievementDetail({ id }) {
   const { data: achievement, loading, error, refetch } = useFetch(() => achievementsApi.getOne(id), [id]);
   const { data: more } = useFetch(() => achievementsApi.list({ limit: 6 }), []);
 
-  if (loading) return <div className="page-shell container" style={{ paddingTop: 140 }}><Loading /></div>;
-  if (error) return <div className="page-shell container" style={{ paddingTop: 140 }}><ErrorMessage error={error} onRetry={refetch} /></div>;
+  if (loading) return <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 24px)" }}><Loading /></div>;
+  if (error) return <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 24px)" }}><ErrorMessage error={error} onRetry={refetch} /></div>;
   if (!achievement) return null;
 
   const bodyText = achievement.content || achievement.description || "";
@@ -91,7 +91,7 @@ function AchievementDetail({ id }) {
 function AchievementsIndex() {
   const { t } = useLanguage();
   return (
-    <div className="page-shell container" style={{ paddingTop: 40, paddingBottom: 90 }}>
+    <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 28px)", paddingBottom: 90 }}>
       <p className="eyebrow">{t("achievements.eyebrow")}</p>
       <h1 className="section-heading" style={{ fontSize: "clamp(30px,3.6vw,46px)", marginBottom: 30 }}>{t("achievements.title")}</h1>
       <AchievementsFeed />

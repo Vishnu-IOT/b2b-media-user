@@ -1,7 +1,24 @@
-.state-msg {
-  padding: 40px 0;
-  text-align: center;
-  color: var(--color-muted);
-  font-size: 14.5px;
-}
+.state-msg { padding: 32px 0; color: var(--color-muted); font-size: 14.5px; }
+.state-msg--error, .state-msg--empty { text-align: center; }
 .state-msg--error p { margin-bottom: 14px; color: var(--color-live); }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+.skeleton-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.skeleton-card { display: flex; flex-direction: column; gap: 10px; }
+.skeleton {
+  background: linear-gradient(90deg, #EEE 25%, #F7F7F7 45%, #EEE 65%);
+  background-size: 300% 100%;
+  animation: shimmer 1.4s linear infinite;
+  border-radius: 0;
+}
+.skeleton--img { aspect-ratio: 16/9; border-radius: 0; }
+.skeleton--line { height: 14px; }
+.skeleton--short { width: 30%; }
+.skeleton--mid { width: 70%; }
+@keyframes shimmer { from { background-position: 100% 0; } to { background-position: 0 0; } }
+.videos-section .skeleton { background: linear-gradient(90deg, #22242A 25%, #2C2F36 45%, #22242A 65%); background-size: 300% 100%; }
+@media (max-width: 700px) { .skeleton-row { grid-template-columns: 1fr; } .skeleton-card:nth-child(n+2) { display: none; } }
+@media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } }

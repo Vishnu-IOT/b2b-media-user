@@ -19,6 +19,12 @@ export default function LoginPage() {
       await login(form.email, form.password);
       navigate(location.state?.from || "/account");
     } catch (err) {
+      // 403 "Please verify your email before logging in": send them to the OTP screen
+      // (email pre-filled, resend available) instead of showing a plain error.
+      if (err.status === 403 && /verify/i.test(err.message || "")) {
+        navigate("/verify-email", { state: { email: form.email.trim() } });
+        return;
+      }
       setError(err.message);
     } finally {
       setBusy(false);

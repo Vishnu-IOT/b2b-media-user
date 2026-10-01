@@ -57,5 +57,7 @@
   "newsletter.success": "Thanks! You're subscribed.",
   "newsletter.error": "Something went wrong. Please try again.",
   "newsletter.invalidEmail": "Enter a valid email address.",
-  "mega.newsletter.desc": "Get business news and insights in your inbox, once a week."
+  "mega.newsletter.desc": "Get business news and insights in your inbox, once a week.",
+  "newsletter.already": "You're already subscribed. Thank you!",
+  "footer.allResources": "All resources →"
 }

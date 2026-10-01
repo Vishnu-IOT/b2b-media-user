@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import useFetch from "../../hooks/useFetch";
 import { storiesApi, strategiesApi, achievementsApi, productsApi, enquiriesApi, videosApi } from "../../api/endpoints";
 import { formatDate } from "../../utils/text";
+import { fileUrl } from "../../api/client";
 import { Loading, ErrorMessage, Empty } from "../common/StateMessage";
 import "./dashboard.css";
 
@@ -13,7 +14,10 @@ const CONFIG = {
       { name: "title", label: "Title", required: true },
       { name: "content", label: "Story", type: "textarea", required: true, rows: 8 },
     ],
-    fileFields: [{ name: "coverImage", label: "Cover Image" }],
+    fileFields: [
+      { name: "coverImage", label: "Cover Image" },
+      { name: "coverImage2", label: "Second Image (optional)" },
+    ],
     display: (i) => i.title,
   },
   strategies: {
@@ -23,7 +27,10 @@ const CONFIG = {
       { name: "title", label: "Title", required: true },
       { name: "content", label: "Strategy details", type: "textarea", required: true, rows: 8 },
     ],
-    fileFields: [{ name: "coverImage", label: "Cover Image" }],
+    fileFields: [
+      { name: "coverImage", label: "Cover Image" },
+      { name: "coverImage2", label: "Second Image (optional)" },
+    ],
     display: (i) => i.title,
   },
   achievements: {
@@ -36,7 +43,10 @@ const CONFIG = {
       { name: "awardedBy", label: "Awarded By" },
       { name: "awardDate", label: "Award Date", type: "date" },
     ],
-    fileFields: [{ name: "image", label: "Image" }],
+    fileFields: [
+      { name: "image", label: "Image" },
+      { name: "image2", label: "Second Image (optional)" },
+    ],
     display: (i) => i.title,
   },
   products: {
@@ -47,7 +57,10 @@ const CONFIG = {
       { name: "description", label: "Description", type: "textarea", rows: 4 },
       { name: "launchDate", label: "Launch Date", type: "date" },
     ],
-    fileFields: [{ name: "image", label: "Image" }],
+    fileFields: [
+      { name: "image", label: "Image" },
+      { name: "image2", label: "Second Image (optional)" },
+    ],
     display: (i) => i.name,
   },
   enquiries: {
@@ -135,6 +148,13 @@ function ItemForm({ config, item, onDone }) {
           {config.fileFields.map((f) => (
             <label key={f.name}>
               {f.label}
+              {/* Show the image that is already saved; picking a new file replaces it, leaving it empty keeps it. */}
+              {item && item[f.name] && !files[f.name] && (
+                <span className="dash-form__current">
+                  {(f.accept || "image/*").startsWith("image") && <img className="dash-form__thumb" src={fileUrl(item[f.name])} alt="" />}
+                  <small>Current file kept unless you choose a new one</small>
+                </span>
+              )}
               <input type="file" accept={f.accept || "image/*"} onChange={(e) => setFiles({ ...files, [f.name]: e.target.files[0] })} />
             </label>
           ))}

@@ -92,7 +92,7 @@ function ResourcesIndex() {
     <div
       className="page-shell container"
       style={{
-        paddingTop: 40,
+        paddingTop: "calc(var(--header-h) + 28px)",
         paddingBottom: 90,
       }}
     >
@@ -189,7 +189,7 @@ function ResourcePostDetail({ idOrSlug }) {
     return (
       <div
         className="page-shell container"
-        style={{ paddingTop: 140 }}
+        style={{ paddingTop: "calc(var(--header-h) + 24px)" }}
       >
         <Loading />
       </div>
@@ -200,7 +200,7 @@ function ResourcePostDetail({ idOrSlug }) {
     return (
       <div
         className="page-shell container"
-        style={{ paddingTop: 140 }}
+        style={{ paddingTop: "calc(var(--header-h) + 24px)" }}
       >
         <ErrorMessage
           error={error}

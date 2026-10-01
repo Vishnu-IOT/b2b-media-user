@@ -2,7 +2,13 @@ import client from "./client";
 
 /* ---------- Auth ---------- */
 export const authApi = {
+  // Step 1 of signup: creates an UNVERIFIED account and emails an OTP. Returns { email } (no token).
   register: (payload) => client.post("/auth/register", payload),
+  // Step 2: returns { user, token }. The token is only issued here, never by /register.
+  verifyOtp: (payload) => client.post("/auth/verify-otp", payload),
+  // Sends a fresh code (invalidates the previous one).
+  resendOtp: (payload) => client.post("/auth/resend-otp", payload),
+  // Login rejects unverified emails with 403 "Please verify your email before logging in".
   login: (payload) => client.post("/auth/login", payload),
   me: () => client.get("/auth/me"),
   changePassword: (payload) => client.put("/auth/change-password", payload),
@@ -67,7 +73,10 @@ export const resourcesApi = {
 
 /* ---------- Newsletter ---------- */
 export const newsletterApi = {
+  // Single step, no OTP. Resolves to { email, alreadySubscribed }.
   subscribe: (email) => client.post("/newsletter/subscribe", { email }),
+  // One-shot: the token comes from the link in the email.
+  unsubscribe: (token) => client.get("/newsletter/unsubscribe", { params: { token } }),
 };
 
 /* helper: send multipart/form-data automatically when a File is present in the payload */

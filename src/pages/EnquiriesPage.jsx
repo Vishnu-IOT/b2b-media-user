@@ -9,8 +9,8 @@ import "../styles/article.css";
 
 function EnquiryDetail({ id }) {
   const { data: enquiry, loading, error, refetch } = useFetch(() => enquiriesApi.getOne(id), [id]);
-  if (loading) return <div className="page-shell container" style={{ paddingTop: 140 }}><Loading /></div>;
-  if (error) return <div className="page-shell container" style={{ paddingTop: 140 }}><ErrorMessage error={error} onRetry={refetch} /></div>;
+  if (loading) return <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 24px)" }}><Loading /></div>;
+  if (error) return <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 24px)" }}><ErrorMessage error={error} onRetry={refetch} /></div>;
   if (!enquiry) return null;
 
   return (
@@ -45,7 +45,7 @@ function EnquiryDetail({ id }) {
 
 function EnquiriesIndex() {
   return (
-    <div className="page-shell container" style={{ paddingTop: 40, paddingBottom: 90 }}>
+    <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 28px)", paddingBottom: 90 }}>
       <p className="eyebrow">Supplier Enquiries</p>
       <h1 className="section-heading" style={{ fontSize: "clamp(30px,3.6vw,46px)", marginBottom: 12 }}>What Businesses Are Looking For</h1>
       <p className="section-sub" style={{ marginBottom: 30 }}>

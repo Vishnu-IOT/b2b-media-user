@@ -1,0 +1,24 @@
+.carousel { position: relative; }
+.carousel .scroll-row { scrollbar-width: none; }
+.carousel .scroll-row::-webkit-scrollbar { display: none; }
+.carousel__btn {
+  position: absolute;
+  top: 38%;
+  z-index: 2;
+  width: 40px; height: 40px;
+  border-radius: 0;
+  border: 1px solid var(--color-line);
+  background: #fff;
+  color: var(--color-ink);
+  font-size: 26px;
+  line-height: 1;
+  padding: 0 0 4px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.14);
+  transition: opacity .2s, transform .15s, background .2s, color .2s;
+}
+.carousel__btn:hover:not(:disabled) { background: var(--color-accent); border-color: var(--color-accent); color: #fff; }
+.carousel__btn:active:not(:disabled) { transform: scale(0.94); }
+.carousel__btn:disabled { opacity: 0; pointer-events: none; }
+.carousel__btn--prev { left: -18px; }
+.carousel__btn--next { right: -18px; }
+@media (max-width: 760px) { .carousel__btn { display: none; } }

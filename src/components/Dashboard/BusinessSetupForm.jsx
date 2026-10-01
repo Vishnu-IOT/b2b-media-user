@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { businessApi } from "../../api/endpoints";
+import { useLanguage } from "../../context/LanguageContext";
 import "./dashboard.css";
 
 const FIELDS = [
@@ -13,6 +14,7 @@ const FIELDS = [
 
 export default function BusinessSetupForm({ business, onSaved }) {
   const isEdit = Boolean(business);
+  const { lang, switchLanguage } = useLanguage();
   const [form, setForm] = useState({
     companyName: business?.companyName || "",
     industry: business?.industry || "",
@@ -22,6 +24,7 @@ export default function BusinessSetupForm({ business, onSaved }) {
     email: business?.email || "",
     description: business?.description || "",
     story: business?.story || "",
+    language: (business && business.language) || "en",
   });
   const [logo, setLogo] = useState(null);
   const [coverImage, setCoverImage] = useState(null);
@@ -35,6 +38,8 @@ export default function BusinessSetupForm({ business, onSaved }) {
     setError(null);
     setSuccess(false);
     const payload = { ...form };
+    // `language` ("en" | "ta") is stored on the business and only exists once it has been created.
+    if (!isEdit) delete payload.language;
     if (logo) payload.logo = logo;
     if (coverImage) payload.coverImage = coverImage;
     try {
@@ -42,6 +47,8 @@ export default function BusinessSetupForm({ business, onSaved }) {
       else await businessApi.create(payload);
       setSuccess(true);
       if (onSaved) onSaved();
+      // Language drives the interface: apply the newly saved choice (this reloads the page).
+      if (isEdit && form.language && form.language !== lang) switchLanguage(form.language);
     } catch (err) {
       setError(err.errors ? err.errors.map((x) => x.message).join(", ") : err.message);
     } finally {
@@ -70,6 +77,15 @@ export default function BusinessSetupForm({ business, onSaved }) {
           </label>
         ))}
       </div>
+      {isEdit && (
+        <label>
+          Language
+          <select value={form.language} onChange={(e) => setForm({ ...form, language: e.target.value })}>
+            <option value="en">English</option>
+            <option value="ta">தமிழ் (Tamil)</option>
+          </select>
+        </label>
+      )}
       <label>
         Short Description
         <textarea rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
