@@ -5,10 +5,14 @@ import { videosApi } from "../api/endpoints";
 import { fileUrl } from "../api/client";
 import { youtubeEmbedUrl } from "../utils/text";
 import { Loading, ErrorMessage } from "../components/common/StateMessage";
+import { useLanguage } from "../context/LanguageContext";
+import useSectionTranslator from "../hooks/useSectionTranslator";
 import { VideosGrid } from "../components/Videos/Videos";
 import "../styles/article.css";
 
 function VideoDetail({ id }) {
+  const { t } = useLanguage();
+  const { tr, pending } = useSectionTranslator(); // this page's own translator
   const { data: video, loading, error, refetch } = useFetch(() => videosApi.getOne(id), [id]);
   if (loading) return <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 24px)" }}><Loading /></div>;
   if (error) return <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 24px)" }}><ErrorMessage error={error} onRetry={refetch} /></div>;
@@ -17,10 +21,10 @@ function VideoDetail({ id }) {
   const embed = video.type === "YOUTUBE" ? youtubeEmbedUrl(video.youtubeUrl) : null;
 
   return (
-    <article className="page-shell article">
+    <article className={`page-shell article${pending ? " is-translating" : ""}`}>
       <div className="container article__head">
-        <p className="eyebrow">Business Video · {video.business.industry}</p>
-        <h1 className="article__headline">{video.title}</h1>
+        <p className="eyebrow">{t("videos.eyebrowDetail")} · {tr(video.business.industry)}</p>
+        <h1 className="article__headline">{tr(video.title)}</h1>
         <div className="article__byline">
           <div className="article__author-avatar">{video.business.companyName.charAt(0)}</div>
           <div><p className="article__author-name">{video.business.companyName}</p></div>
@@ -32,7 +36,7 @@ function VideoDetail({ id }) {
           <div style={{ position: "relative", paddingTop: "56.25%", background: "#000" }}>
             <iframe
               src={embed}
-              title={video.title}
+              title={tr(video.title)}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
               style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }}
@@ -41,12 +45,12 @@ function VideoDetail({ id }) {
         ) : video.videoPath ? (
           <video src={fileUrl(video.videoPath)} controls style={{ width: "100%", background: "#000" }} />
         ) : (
-          <p className="section-sub">Video unavailable.</p>
+          <p className="section-sub">{t("videos.unavailable")}</p>
         )}
       </div>
 
       <div className="container article__body">
-        {video.description && <p>{video.description}</p>}
+        {video.description && <p>{tr(video.description)}</p>}
         {/* <div className="article__footer-actions">
           <Link to={`/businesses/${video.business.slug}`} className="btn btn-outline">
             View {video.business.companyName}'s Profile
@@ -58,10 +62,11 @@ function VideoDetail({ id }) {
 }
 
 function VideosIndex() {
+  const { t } = useLanguage();
   return (
     <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 28px)", paddingBottom: 90 }}>
-      <p className="eyebrow">Business Videos</p>
-      <h1 className="section-heading" style={{ fontSize: "clamp(30px,3.6vw,46px)", marginBottom: 30 }}>Watch the Business</h1>
+      <p className="eyebrow">{t("videos.eyebrow")}</p>
+      <h1 className="section-heading" style={{ fontSize: "clamp(30px,3.6vw,46px)", marginBottom: 30 }}>{t("videos.title")}</h1>
       <VideosGrid />
     </div>
   );

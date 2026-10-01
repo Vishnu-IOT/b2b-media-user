@@ -6,12 +6,14 @@ import { fileUrl } from "../api/client";
 import { excerpt, formatDate, readingTime, toParagraphs } from "../utils/text";
 import ArticleBody from "../components/common/ArticleBody";
 import { useLanguage } from "../context/LanguageContext";
+import useSectionTranslator from "../hooks/useSectionTranslator";
 import { Loading, ErrorMessage } from "../components/common/StateMessage";
 import { StrategiesGrid } from "../components/Strategies/Strategies";
 import "../styles/article.css";
 
 function StrategyDetail({ id }) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const { tr, pending } = useSectionTranslator(); // this article's own translator
   const { data: strategy, loading, error, refetch } = useFetch(() => strategiesApi.getOne(id), [id]);
   if (loading) return <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 24px)" }}><Loading /></div>;
   if (error) return <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 24px)" }}><ErrorMessage error={error} onRetry={refetch} /></div>;
@@ -20,16 +22,16 @@ function StrategyDetail({ id }) {
   const paragraphs = toParagraphs(strategy.content);
 
   return (
-    <article className="page-shell article">
+    <article className={`page-shell article${pending ? " is-translating" : ""}`}>
       <div className="container article__head">
-        <p className="eyebrow">{t("strategies.eyebrowDetail")} · {strategy.business.industry}</p>
-        <h1 className="article__headline">{strategy.title}</h1>
-        <p className="article__dek">{excerpt(strategy.content, 160)}</p>
+        <p className="eyebrow">{t("strategies.eyebrowDetail")} · {tr(strategy.business.industry)}</p>
+        <h1 className="article__headline">{tr(strategy.title)}</h1>
+        <p className="article__dek">{tr(excerpt(strategy.content, 160))}</p>
         <div className="article__byline">
           <div className="article__author-avatar">{strategy.business.companyName.charAt(0)}</div>
           <div>
             <p className="article__author-name">{strategy.business.companyName}</p>
-            <p className="article__author-meta">{readingTime(strategy.content)} · {formatDate(strategy.publishedAt || strategy.createdAt)}</p>
+            <p className="article__author-meta">{readingTime(strategy.content, t)} · {formatDate(strategy.publishedAt || strategy.createdAt, lang)}</p>
           </div>
         </div>
       </div>
@@ -40,7 +42,7 @@ function StrategyDetail({ id }) {
         <ArticleBody
           paragraphs={paragraphs.length ? paragraphs : [strategy.content]}
           image2={fileUrl(strategy.coverImage2)}
-          alt={strategy.title}
+          alt={tr(strategy.title)}
           caption={strategy.business.companyName}
           variant="strategy"
         />

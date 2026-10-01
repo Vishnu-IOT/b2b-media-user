@@ -1,6 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import useFetch from "../../hooks/useFetch";
+import useSectionTranslator from "../../hooks/useSectionTranslator";
+import { useLanguage } from "../../context/LanguageContext";
 import { achievementsApi } from "../../api/endpoints";
 import { fileUrl } from "../../api/client";
 import { excerpt } from "../../utils/text";
@@ -9,12 +11,17 @@ import { SpotlightTitle } from "./YsTitles";
 
 /* Achievements: vertical title on a grey band with four image cards. */
 export default function Spotlight() {
-  const { data, loading, error, refetch } = useFetch(() => achievementsApi.list({ limit: 4 }), []);
+  const { t } = useLanguage();
+  const { tr, pending } = useSectionTranslator(); // this section's own translator
+  const { data, loading, error, refetch } = useFetch(
+    () => achievementsApi.list({ limit: 4 }),
+    [],
+  );
   const items = (data && data.items) || [];
   if (!loading && !error && !items.length) return null;
 
   return (
-    <section className="ys-spot">
+    <section className={`ys-spot${pending ? " is-translating" : ""}`}>
       <div className="container ys-spot__inner">
         <SpotlightTitle />
         <div className="ys-spot__body">
@@ -23,17 +30,31 @@ export default function Spotlight() {
           {!loading && !error && (
             <div className="ys-spot__grid">
               {items.map((a) => (
-                <Link to={`/achievements/${a.id}`} className="ys-card" key={a.id}>
+                <Link
+                  to={`/achievements/${a.id}`}
+                  className="ys-card"
+                  key={a.id}
+                >
                   <div className="ys-card__image">
                     {a.image ? (
-                      <img src={fileUrl(a.image)} alt={a.title} loading="lazy" />
+                      <img
+                        src={fileUrl(a.image)}
+                        alt={tr(a.title)}
+                        loading="lazy"
+                      />
                     ) : (
-                      <div className="ys-card__placeholder">{a.business.companyName.charAt(0)}</div>
+                      <div className="ys-card__placeholder">
+                        {a.business.companyName.charAt(0)}
+                      </div>
                     )}
                   </div>
-                  <span className="eyebrow">{a.business.industry || "Achievement"}</span>
-                  <h3>{a.title}</h3>
-                  <p>{excerpt(a.description, 110)}</p>
+                  <span className="eyebrow">
+                    {a.business.industry
+                      ? tr(a.business.industry)
+                      : t("home.fallback.achievement")}
+                  </span>
+                  <h3>{tr(a.title)}</h3>
+                  <p>{tr(excerpt(a.description, 110))}</p>
                   <span className="ys-author">{a.business.companyName}</span>
                 </Link>
               ))}

@@ -2,11 +2,18 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { fileUrl } from "../../api/client";
 import { excerpt, formatDate, normalizeText } from "../../utils/text";
+import { useLanguage } from "../../context/LanguageContext";
+import useSectionTranslator from "../../hooks/useSectionTranslator";
 import "./profile.css";
 
+// Tab ids stay in English (they are only state keys); the visible label comes from profile.tab.<id>.
 const TABS = ["About", "Stories", "Strategies", "Achievements", "Products", "Enquiries", "Videos"];
 
 export default function BusinessProfile({ business }) {
+  const { t, lang } = useLanguage();
+  // This profile's own translator: description, story, item titles/excerpts, industry and location.
+  // Company name, website, phone and email are shown exactly as written.
+  const { tr, pending } = useSectionTranslator();
   const [tab, setTab] = useState("About");
   const counts = {
     Stories: business.stories?.length || 0,
@@ -18,7 +25,7 @@ export default function BusinessProfile({ business }) {
   };
 
   return (
-    <div className="profile">
+    <div className={`profile${pending ? " is-translating" : ""}`}>
       <div className="profile-hero" style={{ background: business.coverImage ? undefined : "var(--color-ink)" }}>
         {business.coverImage && <img src={fileUrl(business.coverImage)} alt={business.companyName} />}
         <div className="profile-hero__overlay">
@@ -26,7 +33,7 @@ export default function BusinessProfile({ business }) {
             {business.logo && <img className="profile-hero__logo" src={fileUrl(business.logo)} alt={`${business.companyName} logo`} />}
             <div>
               <h1>{business.companyName}</h1>
-              <p>{business.industry}{business.location ? ` · ${business.location}` : ""}</p>
+              <p>{tr(business.industry)}{business.location ? ` · ${tr(business.location)}` : ""}</p>
             </div>
           </div>
         </div>
@@ -34,9 +41,9 @@ export default function BusinessProfile({ business }) {
 
       <div className="container profile-body">
         <div className="profile-tabs">
-          {TABS.map((t) => (
-            <button key={t} className={`profile-tab ${tab === t ? "is-active" : ""}`} onClick={() => setTab(t)}>
-              {t}{counts[t] ? ` (${counts[t]})` : ""}
+          {TABS.map((id) => (
+            <button key={id} className={`profile-tab ${tab === id ? "is-active" : ""}`} onClick={() => setTab(id)}>
+              {t(`profile.tab.${id.toLowerCase()}`)}{counts[id] ? ` (${counts[id]})` : ""}
             </button>
           ))}
         </div>
@@ -44,74 +51,74 @@ export default function BusinessProfile({ business }) {
         <div className="profile-content">
           {tab === "About" && (
             <div className="profile-about">
-              {business.description && <p className="profile-tagline">{business.description}</p>}
+              {business.description && <p className="profile-tagline">{tr(business.description)}</p>}
               {business.story && (
                 <>
-                  <h4 className="profile-subhead">Our Story</h4>
-                  <p className="profile-story-text">{normalizeText(business.story)}</p>
+                  <h4 className="profile-subhead">{t("profile.ourStory")}</h4>
+                  <p className="profile-story-text">{tr(normalizeText(business.story))}</p>
                 </>
               )}
               <div className="profile-facts">
-                {business.website && <div><span>Website</span><a href={business.website} target="_blank" rel="noreferrer"><strong>{business.website}</strong></a></div>}
-                {business.phone && <div><span>Phone</span><strong>{business.phone}</strong></div>}
-                {business.email && <div><span>Email</span><strong>{business.email}</strong></div>}
+                {business.website && <div><span>{t("profile.website")}</span><a href={business.website} target="_blank" rel="noreferrer"><strong>{business.website}</strong></a></div>}
+                {business.phone && <div><span>{t("profile.phone")}</span><strong>{business.phone}</strong></div>}
+                {business.email && <div><span>{t("profile.email")}</span><strong>{business.email}</strong></div>}
               </div>
             </div>
           )}
 
           {tab === "Stories" && (
-            <ListTab items={business.stories} empty="No stories published yet." render={(s) => (
+            <ListTab items={business.stories} empty={t("stories.empty")} render={(s) => (
               <Link to={`/stories/${s.id}`} key={s.id} className="profile-item">
-                <h4>{s.title}</h4>
-                <p>{excerpt(s.content, 140)}</p>
+                <h4>{tr(s.title)}</h4>
+                <p>{tr(excerpt(s.content, 140))}</p>
               </Link>
             )} />
           )}
 
           {tab === "Strategies" && (
-            <ListTab items={business.strategies} empty="No strategies published yet." render={(s) => (
+            <ListTab items={business.strategies} empty={t("strategies.empty")} render={(s) => (
               <Link to={`/strategies/${s.id}`} key={s.id} className="profile-item">
-                <h4>{s.title}</h4>
-                <p>{excerpt(s.content, 140)}</p>
+                <h4>{tr(s.title)}</h4>
+                <p>{tr(excerpt(s.content, 140))}</p>
               </Link>
             )} />
           )}
 
           {tab === "Achievements" && (
-            <ListTab items={business.achievements} empty="No achievements published yet." render={(a) => (
+            <ListTab items={business.achievements} empty={t("achievements.empty")} render={(a) => (
               <div key={a.id} className="profile-item">
-                <h4>{a.title}</h4>
-                {a.description && <p>{a.description}</p>}
-                <span className="profile-item__meta">{a.awardedBy}{a.awardDate ? ` · ${formatDate(a.awardDate)}` : ""}</span>
+                <h4>{tr(a.title)}</h4>
+                {a.description && <p>{tr(a.description)}</p>}
+                <span className="profile-item__meta">{a.awardedBy}{a.awardDate ? ` · ${formatDate(a.awardDate, lang)}` : ""}</span>
               </div>
             )} />
           )}
 
           {tab === "Products" && (
-            <ListTab items={business.products} empty="No products published yet." render={(p) => (
+            <ListTab items={business.products} empty={t("products.empty")} render={(p) => (
               <Link to={`/products/${p.slug}`} key={p.id} className="profile-item">
-                <h4>{p.name}</h4>
-                {p.description && <p>{p.description}</p>}
-                <span className="profile-item__meta">Launch: {formatDate(p.launchDate)}</span>
+                <h4>{tr(p.name)}</h4>
+                {p.description && <p>{tr(p.description)}</p>}
+                <span className="profile-item__meta">{t("profile.launch")} {formatDate(p.launchDate, lang)}</span>
               </Link>
             )} />
           )}
 
           {tab === "Enquiries" && (
-            <ListTab items={business.enquiries} empty="No supplier enquiries posted yet." render={(e) => (
+            <ListTab items={business.enquiries} empty={t("home.enquiries.empty")} render={(e) => (
               <Link to={`/enquiries/${e.id}`} key={e.id} className="profile-item">
-                <h4>{e.title}</h4>
-                <p>{e.description}</p>
-                <span className="profile-item__meta">{e.category}{e.location ? ` · ${e.location}` : ""}</span>
+                <h4>{tr(e.title)}</h4>
+                <p>{tr(e.description)}</p>
+                <span className="profile-item__meta">{tr(e.category)}{e.location ? ` · ${tr(e.location)}` : ""}</span>
               </Link>
             )} />
           )}
 
           {tab === "Videos" && (
-            <ListTab items={business.videos} empty="No videos published yet." render={(v) => (
+            <ListTab items={business.videos} empty={t("videos.empty")} render={(v) => (
               <Link to={`/videos/${v.id}`} key={v.id} className="profile-item">
-                <h4>{v.title}</h4>
-                {v.description && <p>{v.description}</p>}
+                <h4>{tr(v.title)}</h4>
+                {v.description && <p>{tr(v.description)}</p>}
               </Link>
             )} />
           )}

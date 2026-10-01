@@ -3,39 +3,29 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from "
 const STORAGE_KEY = "vartha_lang";
 const LanguageContext = createContext(null);
 
-function readGoogTransCookie() {
-  const match = document.cookie.match(/(?:^|;\s*)googtrans=([^;]*)/);
-  if (!match) return null;
-  const val = decodeURIComponent(match[1]); // looks like "/en/ta"
-  const parts = val.split("/").filter(Boolean);
-  return parts[1] || null; // the target language, e.g. "ta"
-}
-
 /**
- * Static UI text (nav, footer, page headings) is fetched at runtime from
- * /public/i18n/en.json and /public/i18n/ta.json. Dynamic content that comes
- * back from the backend API (achievement/story/strategy content, products,
- * etc.) is translated separately, in the browser, by the Google Translate
- * widget in Header.jsx — there's no Tamil field for it on the backend.
+ * Two kinds of text, handled separately:
  *
- * Those are two independent systems, so switching language needs to move
- * both together or they drift apart (e.g. header stays Tamil while the
- * page content goes English). switchLanguage() below is the single place
- * that does that: it writes our own preference AND Google's "googtrans"
- * cookie, then reloads the page so both boot up already agreeing — this is
- * far more reliable than trying to flip Google's live translation in place,
- * which is known to be flaky inside a React SPA.
+ *  1. STATIC UI text (nav, footer, section titles, buttons, labels) lives in
+ *     /public/i18n/en.json and /public/i18n/ta.json and is read with t("some.key").
+ *     It is never machine-translated.
  *
- * Translation runs in BOTH directions. Google's widget only translates away from the
- * language it thinks the page is in, so index.html declares the page as the OPPOSITE of
- * the target (see the comment there): English view = Tamil->English, Tamil view = English->Tamil.
+ *  2. DYNAMIC text that comes back from the API (story titles, descriptions, categories...)
+ *     is translated section by section with useSectionTranslator() — each section owns its
+ *     own translator and only translates the strings it displays.
+ *
+ * There is no page-wide Google Translate widget any more, so switching language is instant:
+ * no cookie, no page reload.
  */
 export function LanguageProvider({ children }) {
   const [lang, setLang] = useState(() => {
-    const saved = typeof window !== "undefined" && localStorage.getItem(STORAGE_KEY);
-    if (saved === "en" || saved === "ta") return saved;
-    const cookieLang = typeof document !== "undefined" ? readGoogTransCookie() : null;
-    return cookieLang === "en" || cookieLang === "ta" ? cookieLang : "ta"; // Tamil is the default/primary language
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved === "en" || saved === "ta") return saved;
+    } catch {
+      /* storage unavailable */
+    }
+    return "ta"; // Tamil is the default/primary language
   });
   const [dictionaries, setDictionaries] = useState({ en: {}, ta: {} });
   const [loaded, setLoaded] = useState(false);
@@ -66,36 +56,16 @@ export function LanguageProvider({ children }) {
     document.documentElement.setAttribute("lang", lang === "ta" ? "ta" : "en");
   }, [lang]);
 
-  // The one true way to change language: syncs our JSON-driven chrome and
-  // Google's page-content translation, then reloads so both apply cleanly.
-  const switchLanguage = (newLang) => {
-    if (newLang !== "en" && newLang !== "ta") return;
-    if (newLang === lang) return;
-    localStorage.setItem(STORAGE_KEY, newLang);
-    // Always wipe every copy of the cookie first (host + parent domains), otherwise
-    // a stale domain-scoped value from Google wins in production.
-    if (typeof window.__clearGoogTrans === "function") window.__clearGoogTrans();
-    // Two-way translation: the cookie is "/<assumed source>/<target>". Asking for Tamil
-    // translates English -> Tamil; asking for English translates Tamil -> English.
-    document.cookie = (newLang === "en" ? "googtrans=/ta/en" : "googtrans=/en/ta") + ";path=/";
-    window.location.reload();
-  };
-
-  // Stay in sync if someone uses Google's own dropdown instead of ours.
-  useEffect(() => {
-    const handler = (e) => {
-      const el = e.target;
-      if (el && el.classList && el.classList.contains("goog-te-combo")) {
-        const newLang = el.value === "ta" ? "ta" : "en";
-        switchLanguage(newLang);
+  const value = useMemo(() => {
+    const switchLanguage = (newLang) => {
+      if (newLang !== "en" && newLang !== "ta") return;
+      setLang(newLang);
+      try {
+        localStorage.setItem(STORAGE_KEY, newLang);
+      } catch {
+        /* storage unavailable */
       }
     };
-    document.addEventListener("change", handler);
-    return () => document.removeEventListener("change", handler);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lang]);
-
-  const value = useMemo(() => {
     const dict = dictionaries[lang] || dictionaries.ta || {};
     const fallback = dictionaries.ta || {};
     const t = (key) => (dict[key] !== undefined ? dict[key] : fallback[key] !== undefined ? fallback[key] : key);

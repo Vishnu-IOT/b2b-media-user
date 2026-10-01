@@ -6,23 +6,25 @@ import { fileUrl } from "../api/client";
 import { excerpt, formatDate, readingTime, toParagraphs } from "../utils/text";
 import ArticleBody from "../components/common/ArticleBody";
 import { useLanguage } from "../context/LanguageContext";
+import useSectionTranslator from "../hooks/useSectionTranslator";
 import { Loading, ErrorMessage, Empty } from "../components/common/StateMessage";
 import "../styles/article.css";
 
 function RelatedStrip({ currentId, items }) {
   const { t } = useLanguage();
+  const { tr, pending } = useSectionTranslator(); // this strip's own translator
   const related = items.filter((s) => s.id !== currentId).slice(0, 3);
   if (!related.length) return null;
   return (
-    <div className="related-strip">
+    <div className={`related-strip${pending ? " is-translating" : ""}`}>
       <p className="eyebrow">{t("stories.readNext")}</p>
       <div className="related-strip__row">
         {related.map((s) => (
           <Link to={`/stories/${s.id}`} key={s.id} className="related-strip__item">
             {s.coverImage && <img src={fileUrl(s.coverImage)} alt={s.business.companyName} />}
             <div>
-              <span>{s.business.industry}</span>
-              <h4>{s.title}</h4>
+              <span>{tr(s.business.industry)}</span>
+              <h4>{tr(s.title)}</h4>
             </div>
           </Link>
         ))}
@@ -32,6 +34,8 @@ function RelatedStrip({ currentId, items }) {
 }
 
 function StoryDetail({ id }) {
+  const { t, lang } = useLanguage();
+  const { tr, pending } = useSectionTranslator(); // this article's own translator
   const { data: story, loading, error, refetch } = useFetch(() => storiesApi.getOne(id), [id]);
   const { data: more } = useFetch(() => storiesApi.list({ limit: 6 }), []);
 
@@ -42,16 +46,16 @@ function StoryDetail({ id }) {
   const paragraphs = toParagraphs(story.content);
 
   return (
-    <article className="page-shell article">
+    <article className={`page-shell article${pending ? " is-translating" : ""}`}>
       <div className="container article__head">
-        <p className="eyebrow">{story.business.industry} · {story.business.location}</p>
-        <h1 className="article__headline">{story.title}</h1>
-        <p className="article__dek">{excerpt(story.content, 160)}</p>
+        <p className="eyebrow">{tr(story.business.industry)} · {tr(story.business.location)}</p>
+        <h1 className="article__headline">{tr(story.title)}</h1>
+        <p className="article__dek">{tr(excerpt(story.content, 160))}</p>
         <div className="article__byline">
           <div className="article__author-avatar">{story.business.companyName.charAt(0)}</div>
           <div>
             <p className="article__author-name">{story.business.companyName}</p>
-            <p className="article__author-meta">{readingTime(story.content)} · {formatDate(story.publishedAt || story.createdAt)}</p>
+            <p className="article__author-meta">{readingTime(story.content, t)} · {formatDate(story.publishedAt || story.createdAt, lang)}</p>
           </div>
         </div>
       </div>
@@ -66,7 +70,7 @@ function StoryDetail({ id }) {
         <ArticleBody
           paragraphs={paragraphs.length ? paragraphs : [story.content]}
           image2={fileUrl(story.coverImage2)}
-          alt={story.title}
+          alt={tr(story.title)}
           caption={story.business.companyName}
           variant="story"
         />
@@ -86,10 +90,11 @@ function StoryDetail({ id }) {
 
 function StoriesIndex() {
   const { t } = useLanguage();
+  const { tr, pending } = useSectionTranslator(); // this list's own translator
   const { data, loading, error, refetch } = useFetch(() => storiesApi.list({ limit: 24 }), []);
   const items = (data && data.items) || [];
   return (
-    <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 28px)", paddingBottom: 90 }}>
+    <div className={`page-shell container${pending ? " is-translating" : ""}`} style={{ paddingTop: "calc(var(--header-h) + 28px)", paddingBottom: 90 }}>
       <p className="eyebrow">{t("stories.eyebrow")}</p>
       <h1 className="section-heading" style={{ fontSize: "clamp(30px,3.6vw,46px)", marginBottom: 30 }}>{t("stories.title")}</h1>
       {loading && <Loading />}
@@ -104,9 +109,9 @@ function StoriesIndex() {
               <div className="stories-index-card__placeholder">{s.business.companyName.charAt(0)}</div>
             )}
             <div>
-              <p className="eyebrow" style={{ marginBottom: 10 }}>{s.business.industry}</p>
-              <h4>{s.title}</h4>
-              <p className="stories-index-card__meta">{s.business.companyName} · {readingTime(s.content)}</p>
+              <p className="eyebrow" style={{ marginBottom: 10 }}>{tr(s.business.industry)}</p>
+              <h4>{tr(s.title)}</h4>
+              <p className="stories-index-card__meta">{s.business.companyName} · {readingTime(s.content, t)}</p>
             </div>
           </Link>
         ))}

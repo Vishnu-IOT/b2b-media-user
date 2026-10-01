@@ -2,16 +2,18 @@ import React from "react";
 import { Link } from "react-router-dom";
 import useFetch from "../../hooks/useFetch";
 import { videosApi } from "../../api/endpoints";
+import { useLanguage } from "../../context/LanguageContext";
 import VideoCard from "./VideoCard";
 import { Loading, ErrorMessage, Empty } from "../common/StateMessage";
 import "./videos.css";
 
 export function VideosGrid({ limit }) {
+  const { t } = useLanguage();
   const { data, loading, error, refetch } = useFetch(() => videosApi.list({ limit: limit || 20 }), [limit]);
   const items = (data && data.items) || [];
   if (loading) return <Loading />;
   if (error) return <ErrorMessage error={error} onRetry={refetch} />;
-  if (!items.length) return <Empty>No videos published yet.</Empty>;
+  if (!items.length) return <Empty>{t("videos.empty")}</Empty>;
   return (
     <div className="videos-grid">
       {items.map((v) => <VideoCard video={v} key={v.id} />)}

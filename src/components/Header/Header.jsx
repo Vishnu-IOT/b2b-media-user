@@ -93,7 +93,7 @@ export default function Header() {
   return (
     <>
       <header
-        className={`site-header notranslate ${scrolled ? "is-scrolled" : ""} ${openPanel ? "has-panel-open" : ""}`}
+        className={`site-header ${scrolled ? "is-scrolled" : ""} ${openPanel ? "has-panel-open" : ""}`}
         onMouseLeave={scheduleClose}
       >
         {/* Brand row: menu, centred wordmark, account + search (collapses on scroll) */}
@@ -116,7 +116,7 @@ export default function Header() {
               setOpenPanel(null);
             }}
           >
-            <span className="site-header__logo-text notranslate">VARTHA</span>
+            <span className="site-header__logo-text">VARTHA</span>
           </Link>
 
           <div className="site-header__actions">
@@ -128,7 +128,6 @@ export default function Header() {
             >
               {lang === "ta" ? "EN" : "தமிழ்"}
             </button>
-            {/* <div id="google_translate_element" className="notranslate" aria-label="Translate this page" /> */}
             {user ? (
               <>
                 <Link to="/account" className="site-header__signin">
@@ -187,6 +186,15 @@ export default function Header() {
                 </button>
               ))}
             </nav>
+
+            <button
+              className="site-header__text-link site-header__lang-toggle site-header__search-mini"
+              onClick={toggleLang}
+              aria-label="Switch language"
+              title={lang === "ta" ? "Switch to English" : "தமிழுக்கு மாறவும்"}
+            >
+              {lang === "ta" ? "EN" : "தமிழ்"}
+            </button>
 
             <Link to="/search" className="site-header__search-mini" aria-label="Search">
               <SearchIcon />

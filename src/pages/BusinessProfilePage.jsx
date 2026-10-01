@@ -4,9 +4,11 @@ import useFetch from "../hooks/useFetch";
 import { businessApi } from "../api/endpoints";
 import BusinessProfile from "../components/BusinessProfile/BusinessProfile";
 import { Loading, ErrorMessage } from "../components/common/StateMessage";
+import { useLanguage } from "../context/LanguageContext";
 
 export default function BusinessProfilePage() {
   const { idOrSlug } = useParams();
+  const { t } = useLanguage();
   const {
     data: business,
     loading,
@@ -27,14 +29,14 @@ export default function BusinessProfilePage() {
         className="page-shell container"
         style={{ paddingTop: "calc(var(--header-h) + 24px)", paddingBottom: 100 }}
       >
-        <h2 className="section-heading">Business not found</h2>
+        <h2 className="section-heading">{t("profile.notFound")}</h2>
         <ErrorMessage error={error} onRetry={refetch} />
         <Link
           to="/"
           className="btn btn-primary"
           style={{ marginTop: 20, display: "inline-flex" }}
         >
-          Back to Home
+          {t("profile.backHome")}
         </Link>
       </div>
     );

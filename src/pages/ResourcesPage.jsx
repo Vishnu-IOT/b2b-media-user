@@ -7,11 +7,15 @@ import { youtubeEmbedUrl, toParagraphs } from "../utils/text";
 
 import { Loading, ErrorMessage, Empty } from "../components/common/StateMessage";
 import ResourceCard from "../components/ResourceHub/ResourceCard";
+import { useLanguage } from "../context/LanguageContext";
+import useSectionTranslator from "../hooks/useSectionTranslator";
 
 import "../components/ResourceHub/resources.css";
 import "../styles/article.css";
 
 function ResourcesIndex() {
+  const { t } = useLanguage();
+  const { tr, pending } = useSectionTranslator(); // translates category names (cards translate themselves)
   const [searchParams, setSearchParams] = useSearchParams();
 
   const categorySlug = searchParams.get("category");
@@ -90,13 +94,13 @@ function ResourcesIndex() {
 
   return (
     <div
-      className="page-shell container"
+      className={`page-shell container${pending ? " is-translating" : ""}`}
       style={{
         paddingTop: "calc(var(--header-h) + 28px)",
         paddingBottom: 90,
       }}
     >
-      <p className="eyebrow">Business Knowledge</p>
+      <p className="eyebrow">{t("resources.eyebrow")}</p>
 
       <h1
         className="section-heading"
@@ -105,13 +109,13 @@ function ResourcesIndex() {
           marginBottom: 24,
         }}
       >
-        {selectedCategory?.name || "Resources for Local Business"}
+        {selectedCategory ? tr(selectedCategory.name) : t("resources.title")}
       </h1>
 
       {/* Dynamic Categories */}
       {categoriesLoading ? (
         <div className="resources-chips">
-          <span>Loading categories...</span>
+          <span>{t("resources.loadingCategories")}</span>
         </div>
       ) : categoriesError ? (
         <ErrorMessage error={categoriesError} />
@@ -122,7 +126,7 @@ function ResourcesIndex() {
             className={!categorySlug ? "is-active" : ""}
             onClick={() => handleCategoryChange(null)}
           >
-            All
+            {t("resources.all")}
           </button>
 
           {/* Backend Categories */}
@@ -138,7 +142,7 @@ function ResourcesIndex() {
                 handleCategoryChange(category.slug)
               }
             >
-              {category.name}
+              {tr(category.name)}
             </button>
           ))}
         </div>
@@ -154,8 +158,8 @@ function ResourcesIndex() {
       {!loading && !error && items.length === 0 && (
         <Empty>
           {selectedCategory
-            ? `No resources published under ${selectedCategory.name} yet.`
-            : "No resources published yet."}
+            ? t("resources.emptyCategory").replace("{name}", tr(selectedCategory.name))
+            : t("resources.empty")}
         </Empty>
       )}
 
@@ -175,6 +179,8 @@ function ResourcesIndex() {
 }
 
 function ResourcePostDetail({ idOrSlug }) {
+  const { t } = useLanguage();
+  const { tr, pending } = useSectionTranslator(); // this article's own translator
   const {
     data: post,
     loading,
@@ -215,19 +221,19 @@ function ResourcePostDetail({ idOrSlug }) {
   const paragraphs = toParagraphs(post.content);
 
   return (
-    <article className="page-shell article">
+    <article className={`page-shell article${pending ? " is-translating" : ""}`}>
       <div className="container article__head">
         <p className="eyebrow">
-          {post.category?.name}
+          {tr(post.category?.name)}
         </p>
 
         <h1 className="article__headline">
-          {post.title}
+          {tr(post.title)}
         </h1>
 
         {post.summary && (
           <p className="article__dek">
-            {post.summary}
+            {tr(post.summary)}
           </p>
         )}
       </div>
@@ -236,7 +242,7 @@ function ResourcePostDetail({ idOrSlug }) {
         <div className="article__hero-image">
           <img
             src={fileUrl(post.coverImage)}
-            alt={post.title}
+            alt={tr(post.title)}
           />
         </div>
       )}
@@ -258,7 +264,7 @@ function ResourcePostDetail({ idOrSlug }) {
                 youtubeEmbedUrl(post.videoUrl) ||
                 post.videoUrl
               }
-              title={post.title}
+              title={tr(post.title)}
               allowFullScreen
               style={{
                 position: "absolute",
@@ -284,10 +290,10 @@ function ResourcePostDetail({ idOrSlug }) {
         {/* Article Content */}
         {paragraphs.length > 0 ? (
           paragraphs.map((paragraph, index) => (
-            <p key={index}>{paragraph}</p>
+            <p key={index}>{tr(paragraph)}</p>
           ))
         ) : (
-          <p>{post.content}</p>
+          <p>{tr(post.content)}</p>
         )}
 
         {/* Attachment */}
@@ -299,7 +305,7 @@ function ResourcePostDetail({ idOrSlug }) {
               target="_blank"
               rel="noreferrer"
             >
-              Download Attachment
+              {t("resources.downloadAttachment")}
             </a>
           </p>
         )}
@@ -310,7 +316,7 @@ function ResourcePostDetail({ idOrSlug }) {
             to="/resources"
             className="btn-link"
           >
-            ← Back to Resources
+            {t("resources.back")}
           </Link>
         </div>
       </div>

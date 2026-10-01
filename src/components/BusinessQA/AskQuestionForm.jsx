@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { questionsApi } from "../../api/endpoints";
+import { useLanguage } from "../../context/LanguageContext";
 import "./qa.css";
 
 export default function AskQuestionForm({ onCreated }) {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ title: "", description: "", category: "" });
   const [busy, setBusy] = useState(false);
@@ -15,9 +17,9 @@ export default function AskQuestionForm({ onCreated }) {
   if (!user) {
     return (
       <div className="qa-ask-cta">
-        <p>Have a question for the business community?</p>
+        <p>{t("community.askCta")}</p>
         <button className="btn btn-accent" onClick={() => navigate("/login", { state: { from: "/community" } })}>
-          Log in to Ask
+          {t("community.loginToAsk")}
         </button>
       </div>
     );
@@ -26,8 +28,8 @@ export default function AskQuestionForm({ onCreated }) {
   if (!open) {
     return (
       <div className="qa-ask-cta">
-        <p>Have a question for the business community?</p>
-        <button className="btn btn-accent" onClick={() => setOpen(true)}>Ask a Question</button>
+        <p>{t("community.askCta")}</p>
+        <button className="btn btn-accent" onClick={() => setOpen(true)}>{t("community.askButton")}</button>
       </div>
     );
   }
@@ -51,12 +53,12 @@ export default function AskQuestionForm({ onCreated }) {
   return (
     <form className="qa-ask-form" onSubmit={submit}>
       {error && <div className="auth-form__error">{error}</div>}
-      <input required placeholder="Your question" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
-      <textarea required placeholder="Add some context…" rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
-      <input placeholder="Category (optional, e.g. Finance, Exporting)" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
+      <input required placeholder={t("community.phQuestion")} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+      <textarea required placeholder={t("community.phContext")} rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+      <input placeholder={t("community.phCategory")} value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
       <div className="qa-ask-form__actions">
-        <button type="button" className="btn-link" onClick={() => setOpen(false)}>Cancel</button>
-        <button className="btn btn-accent" disabled={busy} type="submit">{busy ? "Posting…" : "Post Question"}</button>
+        <button type="button" className="btn-link" onClick={() => setOpen(false)}>{t("community.cancel")}</button>
+        <button className="btn btn-accent" disabled={busy} type="submit">{busy ? t("community.posting") : t("community.postQuestion")}</button>
       </div>
     </form>
   );

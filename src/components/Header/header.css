@@ -183,7 +183,7 @@
 .site-header__navrow-inner {
   height: 46px;
   display: grid;
-  grid-template-columns: 1fr 40px;
+  grid-template-columns: 1fr 40px 40px;
   align-items: center;
 }
 .site-header__nav {

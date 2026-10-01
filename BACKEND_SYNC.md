@@ -25,10 +25,30 @@ Dashboard -> Business Profile has a Language dropdown (en / ta), saved with `PUT
 On load, `business.language` is applied to the interface once per browser session (see `DashboardPage.jsx`).
 NOTE: `/dashboard` is a new protected route (linked from Account for BUSINESS_ADMIN) because the dashboard page was not routed before.
 
-## 5. Translation (both directions)
-See the comment in `public/index.html`. The Google widget is told the page is written in the OPPOSITE language of the target:
-Tamil view = cookie `/en/ta` (English -> Tamil), English view = cookie `/ta/en` (Tamil -> English).
-Footer resource categories now come from `GET /resource-categories` and are translatable.
+## 5. Translation (per section, both directions)
+The page-wide Google Translate widget is gone. There are now two separate systems:
+- **Static UI text** (nav, footer, section titles such as Top Picks / Conversations / In-Depth, buttons, labels) comes from
+  `public/i18n/en.json` + `ta.json` via `t("key")`. It is never machine-translated. Add new static text there (both files).
+- **API text** (story/strategy/achievement/product titles, excerpts, industries, resource categories, enquiry and question text)
+  is translated by the section that shows it: `const { tr, pending } = useSectionTranslator();` then `{tr(item.title)}`.
+  Each section has its own translator and only translates the strings it renders. Text already in the target language is skipped,
+  so content written in either language ends up correct. Company/person names are not passed through `tr`.
+- Switching language is instant (no cookie, no reload). Results are cached in memory + localStorage (`vartha_tr_cache_v1`).
+- Provider: by default Google's public `gtx` endpoint (no key, unofficial, can be throttled). For production set
+  `REACT_APP_TRANSLATE_URL` to a backend route that accepts `POST { target: "ta"|"en", texts: [...] }` and returns
+  `{ translations: [...] }` (or `{ data: { translations: [...] } }`) in the same order. Files: `src/i18n/translator.js`,
+  `src/hooks/useSectionTranslator.js`.
+- Sections converted: ALL content pages and cards — Home sections, Footer categories, Stories / Strategies / Achievements /
+  Products / Videos / Enquiries / Resources (index + detail pages, related strips, article bodies), Community Q&A (cards + question
+  detail), Business directory cards and Business profile tabs. Article/long text is translated per paragraph by `ArticleBody`.
+  Not translated on purpose: company/person names, the Search page (results must match what the visitor typed), and the
+  Account/Dashboard/Login/Register screens (those are the user's own data and forms).
+- Retry behaviour: each string is requested/cached/failed on its own. If the public endpoint throttles a request, only that string
+  keeps its original text and it is retried automatically (up to 3 attempts, growing delay) — it no longer stays untranslated
+  for the whole session. localStorage cache key is now `vartha_tr_cache_v2` (old v1 cache is cleared on first load).
+- Dates follow the language (`formatDate(date, lang)` -> en-IN / ta-IN) and "min read" comes from `common.minRead`.
+- New static keys for these pages were added to BOTH `en.json` and `ta.json` (videos.*, products.*, enquiries.*, community.*,
+  resources.*, directory.*, profile.*). Keep the two files in sync when adding more.
 
 ## 6. Search page
 `/search?q=...` (header search icon). Queries stories, strategies, achievements, products, businesses, enquiries, videos,

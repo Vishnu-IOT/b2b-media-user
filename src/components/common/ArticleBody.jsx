@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import useSectionTranslator from "../../hooks/useSectionTranslator";
 import "./articlebody.css";
 
 /**
@@ -10,6 +11,7 @@ import "./articlebody.css";
  */
 export default function ArticleBody({ paragraphs = [], image2, alt = "", caption, variant = "story" }) {
   const [broken, setBroken] = useState(false);
+  const { tr, pending } = useSectionTranslator(); // article text is API content, translated here
   const showFigure = Boolean(image2) && !broken;
   const at = paragraphs.length ? Math.max(1, Math.ceil(paragraphs.length / 2)) : 0;
 
@@ -22,10 +24,10 @@ export default function ArticleBody({ paragraphs = [], image2, alt = "", caption
 
   const out = [];
   paragraphs.forEach((p, i) => {
-    out.push(<p key={`p${i}`}>{p}</p>);
+    out.push(<p key={`p${i}`}>{tr(p)}</p>);
     if (i + 1 === at) out.push(figure);
   });
   if (!paragraphs.length) out.push(figure);
 
-  return <div className={`abody abody--${variant}`}>{out}</div>;
+  return <div className={`abody abody--${variant}${pending ? " is-translating" : ""}`}>{out}</div>;
 }

@@ -6,15 +6,17 @@ export function excerpt(raw, length = 160) {
   return `${text.slice(0, length).replace(/\s+\S*$/, "")}…`;
 }
 
-export function formatDate(value) {
+/** `lang` is optional ("en" | "ta"): pass it so month names follow the selected language. */
+export function formatDate(value, lang) {
   if (!value) return "";
-  return new Date(value).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+  return new Date(value).toLocaleDateString(lang === "ta" ? "ta-IN" : "en-IN", { day: "numeric", month: "short", year: "numeric" });
 }
 
-export function readingTime(raw) {
-  if (!raw) return "1 min read";
-  const words = raw.replace(/<[^>]*>/g, " ").trim().split(/\s+/).length;
-  return `${Math.max(1, Math.round(words / 200))} min read`;
+/** `t` is optional: pass LanguageContext's t() so the "min read" label follows the selected language. */
+export function readingTime(raw, t) {
+  const words = raw ? raw.replace(/<[^>]*>/g, " ").trim().split(/\s+/).length : 0;
+  const minutes = raw ? Math.max(1, Math.round(words / 200)) : 1;
+  return `${minutes} ${t ? t("common.minRead") : "min read"}`;
 }
 
 /** Converts a canonical YouTube watch URL into an embeddable iframe URL. */

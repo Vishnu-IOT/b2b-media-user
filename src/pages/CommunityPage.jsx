@@ -1,15 +1,17 @@
 import React from "react";
 import { QuestionsFeed } from "../components/BusinessQA/BusinessQA";
 import AskQuestionForm from "../components/BusinessQA/AskQuestionForm";
+import { useLanguage } from "../context/LanguageContext";
 
 export default function CommunityPage() {
+  const { t } = useLanguage();
   const [refreshKey, setRefreshKey] = React.useState(0);
   return (
     <div className="page-shell container" style={{ paddingTop: "calc(var(--header-h) + 28px)", paddingBottom: 90, maxWidth: 800 }}>
-      <p className="eyebrow">Business Community</p>
-      <h1 className="section-heading" style={{ fontSize: "clamp(30px,3.6vw,46px)", marginBottom: 10 }}>Ask the Business Community</h1>
+      <p className="eyebrow">{t("home.qa.eyebrow")}</p>
+      <h1 className="section-heading" style={{ fontSize: "clamp(30px,3.6vw,46px)", marginBottom: 10 }}>{t("home.qa.heading")}</h1>
       <p className="section-sub" style={{ marginBottom: 26 }}>
-        Ask a question, or help another business by answering one.
+        {t("community.sub")}
       </p>
       <AskQuestionForm onCreated={() => setRefreshKey((k) => k + 1)} />
       <QuestionsFeed key={refreshKey} />

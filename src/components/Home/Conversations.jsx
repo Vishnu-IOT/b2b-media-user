@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import useFetch from "../../hooks/useFetch";
+import useSectionTranslator from "../../hooks/useSectionTranslator";
+import { useLanguage } from "../../context/LanguageContext";
 import { videosApi } from "../../api/endpoints";
 import { fileUrl } from "../../api/client";
 import { Loading, ErrorMessage } from "../common/StateMessage";
@@ -17,6 +19,8 @@ function youtubeThumb(watchUrl) {
 
 /* Videos: one big slide (text left, video right) with square prev/next buttons. */
 export default function Conversations() {
+  const { t } = useLanguage();
+  const { tr, pending } = useSectionTranslator(); // this section's own translator
   const { data, loading, error, refetch } = useFetch(() => videosApi.list({ limit: 6 }), []);
   const [index, setIndex] = useState(0);
   const items = (data && data.items) || [];
@@ -33,7 +37,7 @@ export default function Conversations() {
     : null;
 
   return (
-    <section className="ys-section ys-conv">
+    <section className={`ys-section ys-conv${pending ? " is-translating" : ""}`}>
       <div className="container">
         <ConversationsTitle />
         {loading && <Loading />}
@@ -43,15 +47,15 @@ export default function Conversations() {
             <div className="ys-conv__slide" key={v.id}>
               <div className="ys-conv__text">
                 <span className="eyebrow">{v.business.companyName}</span>
-                <h3>{v.title}</h3>
-                <p>{v.description || v.title}</p>
+                <h3>{tr(v.title)}</h3>
+                <p>{tr(v.description || v.title)}</p>
                 <Link to={`/videos/${v.id}`} className="ys-conv__more">
-                  View Highlights <span aria-hidden="true">↗</span>
+                  {t("home.viewHighlights")} <span aria-hidden="true">↗</span>
                 </Link>
               </div>
-              <Link to={`/videos/${v.id}`} className="ys-conv__media" aria-label={v.title}>
+              <Link to={`/videos/${v.id}`} className="ys-conv__media" aria-label={tr(v.title)}>
                 {thumb ? (
-                  <img src={thumb} alt={v.title} />
+                  <img src={thumb} alt={tr(v.title)} />
                 ) : (
                   <div className="ys-conv__placeholder">{v.business.companyName.charAt(0)}</div>
                 )}
@@ -59,8 +63,8 @@ export default function Conversations() {
               </Link>
             </div>
             <div className="ys-arrows">
-              <button type="button" className="ys-arrow" aria-label="Previous video" disabled={index === 0} onClick={() => setIndex((i) => Math.max(0, i - 1))}>‹</button>
-              <button type="button" className="ys-arrow ys-arrow--dark" aria-label="Next video" disabled={index >= items.length - 1} onClick={() => setIndex((i) => Math.min(items.length - 1, i + 1))}>›</button>
+              <button type="button" className="ys-arrow" aria-label={t("home.prevVideo")} disabled={index === 0} onClick={() => setIndex((i) => Math.max(0, i - 1))}>‹</button>
+              <button type="button" className="ys-arrow ys-arrow--dark" aria-label={t("home.nextVideo")} disabled={index >= items.length - 1} onClick={() => setIndex((i) => Math.min(items.length - 1, i + 1))}>›</button>
             </div>
           </>
         )}

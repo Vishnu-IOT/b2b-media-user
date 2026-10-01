@@ -2,17 +2,19 @@ import React from "react";
 import { Link } from "react-router-dom";
 import useFetch from "../../hooks/useFetch";
 import { strategiesApi } from "../../api/endpoints";
+import { useLanguage } from "../../context/LanguageContext";
 import StrategyCard from "./StrategyCard";
 import Carousel from "../common/Carousel";
 import { Loading, ErrorMessage, Empty } from "../common/StateMessage";
 import "./strategies.css";
 
 export function StrategiesGrid({ limit }) {
+  const { t } = useLanguage();
   const { data, loading, error, refetch } = useFetch(() => strategiesApi.list({ limit: limit || 20 }), [limit]);
   const items = (data && data.items) || [];
   if (loading) return <Loading />;
   if (error) return <ErrorMessage error={error} onRetry={refetch} />;
-  if (!items.length) return <Empty>No strategies published yet.</Empty>;
+  if (!items.length) return <Empty>{t("strategies.empty")}</Empty>;
   return (
     <div className="strategies-grid">
       {items.map((s) => <StrategyCard strategy={s} key={s.id} />)}

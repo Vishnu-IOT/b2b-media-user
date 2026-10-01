@@ -6,16 +6,18 @@ import { fileUrl } from "../api/client";
 import { excerpt, formatDate, readingTime, toParagraphs } from "../utils/text";
 import ArticleBody from "../components/common/ArticleBody";
 import { useLanguage } from "../context/LanguageContext";
+import useSectionTranslator from "../hooks/useSectionTranslator";
 import { Loading, ErrorMessage } from "../components/common/StateMessage";
 import { AchievementsFeed } from "../components/Achievements/Achievements";
 import "../styles/article.css";
 
 function RelatedStrip({ currentId, items }) {
   const { t } = useLanguage();
+  const { tr, pending } = useSectionTranslator(); // this strip's own translator
   const related = items.filter((a) => a.id !== currentId).slice(0, 3);
   if (!related.length) return null;
   return (
-    <div className="related-strip">
+    <div className={`related-strip${pending ? " is-translating" : ""}`}>
       <p className="eyebrow">{t("achievements.related")}</p>
       <div className="related-strip__row">
         {related.map((a) => (
@@ -23,7 +25,7 @@ function RelatedStrip({ currentId, items }) {
             {a.image && <img src={fileUrl(a.image)} alt={a.business.companyName} />}
             <div>
               <span>{a.business.companyName}</span>
-              <h4>{a.title}</h4>
+              <h4>{tr(a.title)}</h4>
             </div>
           </Link>
         ))}
@@ -33,7 +35,8 @@ function RelatedStrip({ currentId, items }) {
 }
 
 function AchievementDetail({ id }) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const { tr, pending } = useSectionTranslator(); // this article's own translator
   const { data: achievement, loading, error, refetch } = useFetch(() => achievementsApi.getOne(id), [id]);
   const { data: more } = useFetch(() => achievementsApi.list({ limit: 6 }), []);
 
@@ -45,21 +48,21 @@ function AchievementDetail({ id }) {
   const paragraphs = toParagraphs(bodyText);
 
   return (
-    <article className="page-shell article">
+    <article className={`page-shell article${pending ? " is-translating" : ""}`}>
       <div className="container article__head">
         <p className="eyebrow">
-          {t("achievements.eyebrowDetail")}{achievement.business.industry ? ` · ${achievement.business.industry}` : ""}
+          {t("achievements.eyebrowDetail")}{achievement.business.industry ? ` · ${tr(achievement.business.industry)}` : ""}
         </p>
-        <h1 className="article__headline">{achievement.title}</h1>
-        {bodyText && <p className="article__dek">{excerpt(bodyText, 160)}</p>}
+        <h1 className="article__headline">{tr(achievement.title)}</h1>
+        {bodyText && <p className="article__dek">{tr(excerpt(bodyText, 160))}</p>}
         <div className="article__byline">
           <div className="article__author-avatar">{achievement.business.companyName.charAt(0)}</div>
           <div>
             <p className="article__author-name">{achievement.business.companyName}</p>
             <p className="article__author-meta">
-              {achievement.awardedBy ? `${t("achievements.awardedByPrefix")} ${achievement.awardedBy}` : readingTime(bodyText)}
+              {achievement.awardedBy ? `${t("achievements.awardedByPrefix")} ${achievement.awardedBy}` : readingTime(bodyText, t)}
               {" · "}
-              {formatDate(achievement.awardDate || achievement.publishedAt || achievement.createdAt)}
+              {formatDate(achievement.awardDate || achievement.publishedAt || achievement.createdAt, lang)}
             </p>
           </div>
         </div>
@@ -75,7 +78,7 @@ function AchievementDetail({ id }) {
         <ArticleBody
           paragraphs={paragraphs.length ? paragraphs : bodyText ? [bodyText] : []}
           image2={fileUrl(achievement.image2)}
-          alt={achievement.title}
+          alt={tr(achievement.title)}
           caption={achievement.business.companyName}
           variant="achievement"
         />
