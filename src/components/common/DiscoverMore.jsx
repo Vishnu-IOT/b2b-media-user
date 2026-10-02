@@ -8,11 +8,11 @@ import "./discover.css";
 
 function Column({ title, to, fetcher, label, href }) {
   const { data } = useFetch(fetcher, []);
-  const { tr } = useSectionTranslator(); // one translator per column
+  const { tr, pending } = useSectionTranslator(); // one translator per column
   const items = (data && data.items) || [];
   if (!items.length) return null;
   return (
-    <div className="discover__col">
+    <div className={`discover__col${pending ? " is-translating" : ""}`}>
       <h3><Link to={to}>{title}</Link></h3>
       <ul>
         {items.slice(0, 4).map((it) => (

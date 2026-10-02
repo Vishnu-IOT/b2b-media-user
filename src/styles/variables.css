@@ -224,9 +224,7 @@ button { font-family: inherit; cursor: pointer; }
 .page-shell { padding-top: calc(var(--header-h) + 24px); min-height: 60vh; }
 
 /* ---------- Section translation ----------
-   A section that is waiting for its API text to be translated dims its text slightly. */
-.is-translating h3,
-.is-translating h4,
-.is-translating p,
-.is-translating .eyebrow,
-.is-translating .ys-author { opacity: 0.55; transition: opacity 0.2s ease; }
+   A section that is waiting for its API text to be translated is hidden until the translation is ready,
+   so the original (English) text is never shown first. */
+.is-translating { visibility: hidden; }
+/* Hidden (not removed) so the layout does not jump when the translated text appears. */

@@ -11,7 +11,7 @@ const MAX_CATEGORIES = 6;
 
 export default function Footer() {
   const { t } = useLanguage();
-  const { tr } = useSectionTranslator(); // footer's own translator (category names only)
+  const { tr, pending } = useSectionTranslator(); // footer's own translator (category names only)
   // Resource categories come from the API (same endpoint as the Resources page), not a hard-coded list.
   const { data: categoriesData } = useFetch(() => resourceCategoriesApi.list(), []);
   const categories = (Array.isArray(categoriesData) ? categoriesData : (categoriesData && categoriesData.items) || [])
@@ -43,7 +43,7 @@ export default function Footer() {
         <div className="site-footer__col">
           <h4>{t("footer.resources")}</h4>
           {categories.map((c) => (
-            <Link key={c.slug} to={`/resources?category=${encodeURIComponent(c.slug)}`} className="site-footer__cat">
+            <Link key={c.slug} to={`/resources?category=${encodeURIComponent(c.slug)}`} className={`site-footer__cat${pending ? " is-translating" : ""}`}>
               {tr(c.name)}
             </Link>
           ))}
