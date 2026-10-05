@@ -6,10 +6,10 @@ export function excerpt(raw, length = 160) {
   return `${text.slice(0, length).replace(/\s+\S*$/, "")}…`;
 }
 
-/** `lang` is optional ("en" | "ta"): pass it so month names follow the selected language. */
-export function formatDate(value, lang) {
+/** Dates are always shown in English, whatever language is selected (the `lang` argument is ignored). */
+export function formatDate(value, lang) { // eslint-disable-line no-unused-vars
   if (!value) return "";
-  return new Date(value).toLocaleDateString(lang === "ta" ? "ta-IN" : "en-IN", { day: "numeric", month: "short", year: "numeric" });
+  return new Date(value).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 }
 
 /** `t` is optional: pass LanguageContext's t() so the "min read" label follows the selected language. */

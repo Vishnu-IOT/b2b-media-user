@@ -3,8 +3,9 @@ import { Link, useParams } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
 import { productsApi } from "../api/endpoints";
 import { fileUrl } from "../api/client";
-import { formatDate, toParagraphs } from "../utils/text";
+import { excerpt, formatDate, toParagraphs } from "../utils/text";
 import ArticleBody from "../components/common/ArticleBody";
+import ShareButton from "../components/Share/ShareButton";
 import { useLanguage } from "../context/LanguageContext";
 import useSectionTranslator from "../hooks/useSectionTranslator";
 import { Loading, ErrorMessage, Empty } from "../components/common/StateMessage";
@@ -24,7 +25,7 @@ function ProductDetail({ slug }) {
   return (
     <article className={`page-shell article${pending ? " is-translating" : ""}`}>
       <div className="container article__head">
-        <p className="eyebrow">{upcoming ? t("products.upcomingProduct") : t("products.newLaunch")} · {tr(product.business.industry)}</p>
+        <p className="eyebrow">{upcoming ? t("products.upcomingProduct") : t("products.newLaunch")} · {product.business.industry}</p>
         <h1 className="article__headline">{tr(product.name)}</h1>
         <div className="article__byline">
           <div className="article__author-avatar">{product.business.companyName.charAt(0)}</div>
@@ -32,6 +33,11 @@ function ProductDetail({ slug }) {
             <p className="article__author-name">{product.business.companyName}</p>
             <p className="article__author-meta">{upcoming ? t("products.launching") : t("products.launched")} {formatDate(product.launchDate, lang)}</p>
           </div>
+          <ShareButton
+            title={tr(product.name)}
+            text={product.description ? tr(excerpt(product.description, 160)) : ""}
+            images={[fileUrl(product.image), fileUrl(product.image2)]}
+          />
         </div>
       </div>
       {product.image && (

@@ -5,9 +5,12 @@ import {
   enquiriesApi, videosApi, resourcesApi, questionsApi,
 } from "../api/endpoints";
 import { fileUrl } from "../api/client";
+import { useLanguage } from "../context/LanguageContext";
+import useSectionTranslator from "../hooks/useSectionTranslator";
 import "../styles/search-page.css";
 
 const LIMIT = 30; // items fetched per content type
+const PAGE = 10; // results shown at a time (each shown result translates its own text)
 
 /**
  * One entry per searchable content type. `text` lists every field that can match;
@@ -30,7 +33,7 @@ const SOURCES = [
     title: (i) => i.name, sub: (i) => i.business && i.business.companyName,
     text: (i) => [i.name, i.description, i.category, i.business && i.business.companyName],
     snippet: (i) => [i.description], href: (i) => `/products/${i.slug}`, image: (i) => i.image },
-  { key: "businesses", label: "Businesses", list: (p) => businessApi.list(p),
+  { key: "businesses", label: "Businesses", nameTitle: true, subTr: true, list: (p) => businessApi.list(p),
     title: (i) => i.companyName, sub: (i) => [i.industry, i.location].filter(Boolean).join(" · "),
     text: (i) => [i.companyName, i.industry, i.location, i.description, i.tagline],
     snippet: (i) => [i.description, i.tagline], href: (i) => `/businesses/${i.slug}`, image: (i) => i.coverImage || i.logo },
@@ -42,20 +45,20 @@ const SOURCES = [
     title: (i) => i.title, sub: (i) => i.business && i.business.companyName,
     text: (i) => [i.title, i.description, i.business && i.business.companyName],
     snippet: (i) => [i.description], href: (i) => `/videos/${i.id}`, image: (i) => i.thumbnail },
-  { key: "resources", label: "Resources", list: (p) => resourcesApi.list(p),
+  { key: "resources", label: "Resources", subTr: true, list: (p) => resourcesApi.list(p),
     title: (i) => i.title, sub: (i) => i.category && i.category.name,
     text: (i) => [i.title, i.summary, i.content, i.category && i.category.name],
     snippet: (i) => [i.summary, i.content], href: (i) => `/resources/${i.slug}`, image: (i) => i.coverImage },
-  { key: "community", label: "Community", list: (p) => questionsApi.list(p),
+  { key: "community", label: "Community", subTr: true, list: (p) => questionsApi.list(p),
     title: (i) => i.title, sub: (i) => i.category,
     text: (i) => [i.title, i.description, i.category],
     snippet: (i) => [i.description], href: (i) => `/community/${i.id}`, image: () => null },
 ];
 
 const SUGGESTIONS = [
-  { label: "Stories", to: "/stories" }, { label: "Products", to: "/products" },
-  { label: "Businesses", to: "/businesses" }, { label: "Enquiries", to: "/enquiries" },
-  { label: "Videos", to: "/videos" }, { label: "Resources", to: "/resources" },
+  { key: "stories", to: "/stories" }, { key: "products", to: "/products" },
+  // { key: "businesses", to: "/businesses" }, { key: "enquiries", to: "/enquiries" },
+  { key: "videos", to: "/videos" }, { key: "resources", to: "/resources" },
 ];
 
 const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -104,7 +107,34 @@ function SearchIcon() {
   );
 }
 
+/**
+ * One search result. Each row has its own translator (like every other card), so the title /
+ * snippet / category come from the API and are translated here; company names are left as written.
+ * The row stays hidden until its Tamil text is ready, so English never flashes first.
+ */
+function ResultRow({ r, words }) {
+  const { t } = useLanguage();
+  const { tr, pending } = useSectionTranslator();
+  return (
+    <li>
+      <Link to={r.href} className={`search-result${pending ? " is-translating" : ""}`}>
+        <div className="search-result__thumb">
+          {r.image ? <img src={fileUrl(r.image)} alt="" loading="lazy" /> : <span>{(r.title || "?").charAt(0)}</span>}
+        </div>
+        <div className="search-result__body">
+          <span className="eyebrow">{t(`search.type.${r.type}`)}</span>
+          <h3><Highlight text={r.nameTitle ? r.title : tr(r.title)} words={words} /></h3>
+          {r.snippet && <p><Highlight text={tr(r.snippet)} words={words} /></p>}
+          {r.sub && <span className="search-result__sub">{r.subTr ? tr(r.sub) : r.sub}</span>}
+        </div>
+      </Link>
+    </li>
+  );
+}
+
 export default function SearchPage() {
+  const { t } = useLanguage();
+  const [shown, setShown] = useState(PAGE);
   const [params, setParams] = useSearchParams();
   const urlQuery = params.get("q") || "";
   const [input, setInput] = useState(urlQuery);
@@ -140,6 +170,7 @@ export default function SearchPage() {
     const id = ++requestId.current;
     setState((s) => ({ ...s, status: "loading" }));
     setFilter("all");
+    setShown(PAGE);
     Promise.allSettled(SOURCES.map((src) => src.list({ q, limit: LIMIT }))).then((settled) => {
       if (id !== requestId.current) return; // a newer search has started
       let failed = 0;
@@ -154,6 +185,7 @@ export default function SearchPage() {
         items.filter((it) => matches(src, it, words)).forEach((it) =>
           results.push({
             type: src.key, label: src.label, id: `${src.key}-${it.id}`,
+            nameTitle: !!src.nameTitle, subTr: false, // company names, categories and other labels always stay English
             title: clean(src.title(it)), sub: clean(src.sub(it)),
             snippet: snippetFor(src.snippet(it), words), href: src.href(it),
             image: src.image(it),
@@ -170,7 +202,19 @@ export default function SearchPage() {
     state.results.forEach((r) => (c[r.type] = (c[r.type] || 0) + 1));
     return c;
   }, [state.results]);
-  const visible = filter === "all" ? state.results : state.results.filter((r) => r.type === filter);
+  const filtered = filter === "all" ? state.results : state.results.filter((r) => r.type === filter);
+  const visible = filtered.slice(0, shown);
+  // "{n} results for {q}" — the query is bold, and the sentence order is up to the language file.
+  const countLine = () => {
+    const n = state.results.length;
+    const tpl = t(n === 0 ? "search.count.none" : n === 1 ? "search.count.one" : "search.count.many");
+    const [before, after = ""] = tpl.split("{q}");
+    return (
+      <>
+        {before.replace("{n}", n)}<strong>“{urlQuery.trim()}”</strong>{after.replace("{n}", n)}
+      </>
+    );
+  };
   const submit = (e) => {
     e.preventDefault();
     const next = input.trim();
@@ -187,30 +231,30 @@ export default function SearchPage() {
             type="search"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Search stories, products, businesses, enquiries…"
-            aria-label="Search"
+            placeholder={t("search.placeholder")}
+            aria-label={t("search.label")}
           />
           {input && (
-            <button type="button" className="search-box__clear" onClick={() => { setInput(""); setParams({}, { replace: true }); inputRef.current && inputRef.current.focus(); }} aria-label="Clear search">
+            <button type="button" className="search-box__clear" onClick={() => { setInput(""); setParams({}, { replace: true }); inputRef.current && inputRef.current.focus(); }} aria-label={t("search.clear")}>
               ✕
             </button>
           )}
-          <button type="submit" className="btn btn-primary search-box__go">Search</button>
+          <button type="submit" className="btn btn-primary search-box__go">{t("search.button")}</button>
         </form>
 
         {state.status === "idle" && (
           <div className="search-hint">
-            <h1>What are you looking for?</h1>
-            <p>Search across stories, products, businesses, supplier enquiries, videos, resources and community questions.</p>
+            <h1>{t("search.hintTitle")}</h1>
+            <p>{t("search.hintText")}</p>
             <div className="search-hint__chips">
-              {SUGGESTIONS.map((s) => <Link key={s.to} to={s.to}>{s.label}</Link>)}
+              {SUGGESTIONS.map((s) => <Link key={s.to} to={s.to}>{t(`search.type.${s.key}`)}</Link>)}
             </div>
           </div>
         )}
 
         {state.status === "loading" && (
           <div className="search-loading" role="status" aria-live="polite">
-            <span className="sr-only">Searching…</span>
+            <span className="sr-only">{t("search.searching")}</span>
             {[0, 1, 2, 3].map((i) => (
               <div className="search-skel" key={i} aria-hidden="true">
                 <div className="skeleton search-skel__img" />
@@ -226,28 +270,26 @@ export default function SearchPage() {
 
         {state.status === "error" && (
           <div className="search-empty">
-            <h2>We couldn't run your search</h2>
-            <p>Please check your connection and try again.</p>
-            <button className="btn btn-outline" onClick={() => setParams({ q: urlQuery.trim() })}>Try again</button>
+            <h2>{t("search.errorTitle")}</h2>
+            <p>{t("search.errorText")}</p>
+            <button className="btn btn-outline" onClick={() => setParams({ q: urlQuery.trim() })}>{t("search.tryAgain")}</button>
           </div>
         )}
 
         {state.status === "done" && (
           <>
             <p className="search-count" aria-live="polite">
-              {state.results.length === 0
-                ? "No results"
-                : `${state.results.length} result${state.results.length === 1 ? "" : "s"}`} for <strong>“{urlQuery.trim()}”</strong>
+              {countLine()}
             </p>
 
             {state.results.length > 0 && (
-              <div className="search-filters" role="tablist" aria-label="Filter by type">
-                <button role="tab" aria-selected={filter === "all"} className={filter === "all" ? "is-active" : ""} onClick={() => setFilter("all")}>
-                  All <span>{state.results.length}</span>
+              <div className="search-filters" role="tablist" aria-label={t("search.filterBy")}>
+                <button role="tab" aria-selected={filter === "all"} className={filter === "all" ? "is-active" : ""} onClick={() => { setFilter("all"); setShown(PAGE); }}>
+                  {t("search.all")} <span>{state.results.length}</span>
                 </button>
                 {SOURCES.filter((s) => counts[s.key]).map((s) => (
-                  <button key={s.key} role="tab" aria-selected={filter === s.key} className={filter === s.key ? "is-active" : ""} onClick={() => setFilter(s.key)}>
-                    {s.label} <span>{counts[s.key]}</span>
+                  <button key={s.key} role="tab" aria-selected={filter === s.key} className={filter === s.key ? "is-active" : ""} onClick={() => { setFilter(s.key); setShown(PAGE); }}>
+                    {t(`search.type.${s.key}`)} <span>{counts[s.key]}</span>
                   </button>
                 ))}
               </div>
@@ -255,34 +297,26 @@ export default function SearchPage() {
 
             {state.results.length === 0 && (
               <div className="search-empty">
-                <h2>Nothing matched “{urlQuery.trim()}”</h2>
-                <p>Try a shorter or different word, check the spelling, or browse a section instead.</p>
+                <h2>{t("search.emptyTitle").replace("{q}", urlQuery.trim())}</h2>
+                <p>{t("search.emptyText")}</p>
                 <div className="search-hint__chips">
-                  {SUGGESTIONS.map((s) => <Link key={s.to} to={s.to}>{s.label}</Link>)}
+                  {SUGGESTIONS.map((s) => <Link key={s.to} to={s.to}>{t(`search.type.${s.key}`)}</Link>)}
                 </div>
               </div>
             )}
 
             <ul className="search-results">
-              {visible.map((r) => (
-                <li key={r.id}>
-                  <Link to={r.href} className="search-result">
-                    <div className="search-result__thumb">
-                      {r.image ? <img src={fileUrl(r.image)} alt="" loading="lazy" /> : <span>{(r.title || "?").charAt(0)}</span>}
-                    </div>
-                    <div className="search-result__body">
-                      <span className="eyebrow">{r.label}</span>
-                      <h3><Highlight text={r.title} words={words} /></h3>
-                      {r.snippet && <p><Highlight text={r.snippet} words={words} /></p>}
-                      {r.sub && <span className="search-result__sub">{r.sub}</span>}
-                    </div>
-                  </Link>
-                </li>
-              ))}
+              {visible.map((r) => <ResultRow key={r.id} r={r} words={words} />)}
             </ul>
 
+            {filtered.length > shown && (
+              <div style={{ textAlign: "center", marginTop: 24 }}>
+                <button className="btn btn-outline" onClick={() => setShown((n) => n + PAGE)}>{t("search.showMore")}</button>
+              </div>
+            )}
+
             {state.failed > 0 && state.results.length > 0 && (
-              <p className="search-note">Some sections couldn't be searched just now, so a few results may be missing.</p>
+              <p className="search-note">{t("search.partialNote")}</p>
             )}
           </>
         )}

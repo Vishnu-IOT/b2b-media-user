@@ -60,7 +60,7 @@ export default function BusinessFirst() {
                         cls="ys-card__placeholder"
                       />
                     </div>
-                    <span className="eyebrow">{tr(s.business.industry)}</span>
+                    <span className="eyebrow">{s.business.industry}</span>
                     <h3>{tr(s.title)}</h3>
                     <span className="ys-author">{s.business.companyName}</span>
                   </Link>
@@ -81,7 +81,7 @@ export default function BusinessFirst() {
                 </div>
                 <div className="ys-feature__description">
                   <span className="eyebrow">
-                    {tr(feature.business.industry)}
+                    {feature.business.industry}
                   </span>
                   <h3>{tr(feature.title)}</h3>
                   <p>{tr(excerpt(feature.content, 250))}</p>
@@ -135,7 +135,7 @@ export default function BusinessFirst() {
                       cls="ys-card__placeholder"
                     />
                   </div>
-                  <span className="eyebrow">{tr(s.business.industry)}</span>
+                  <span className="eyebrow">{s.business.industry}</span>
                   <h3>{tr(s.title)}</h3>
                   <span className="ys-author">{s.business.companyName}</span>
                 </Link>

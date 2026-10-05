@@ -4,6 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useLanguage } from "../../context/LanguageContext";
 import { businessApi, resourceCategoriesApi } from "../../api/endpoints";
 import { fileUrl } from "../../api/client";
+import useSectionTranslator from "../../hooks/useSectionTranslator";
 import NewsletterForm from "../Newsletter/NewsletterForm";
 import "./header.css";
 
@@ -52,7 +53,7 @@ function SearchIcon() {
 
 export default function Header() {
   const { user, logout } = useAuth();
-  const { t, lang, toggleLang } = useLanguage();
+  const { tEn: t, lang, toggleLang } = useLanguage(); // navbar text is always English (t = tEn)
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [openPanel, setOpenPanel] = useState(null);
@@ -60,6 +61,13 @@ export default function Header() {
   const [featured, setFeatured] = useState(null);
   const [resourceCategories, setResourceCategories] = useState([]);
   const closeTimer = useRef(null);
+  // Resource categories come from the API, so their names/descriptions go through this translator.
+  const { tr, pending: catPending } = useSectionTranslator("en"); // category names also stay English
+  // Register them on every render (not only when the menu is open) so translation starts as soon as
+  // the categories load and the dropdown never opens with untranslated text.
+  resourceCategories.forEach((c) => {
+    if (c.description) tr(c.description);
+  });
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -147,7 +155,7 @@ export default function Header() {
                 </Link>
               </>
             )}
-            <Link to="/search" className="site-header__search" aria-label="Search">
+            <Link to="/search" className="site-header__search" aria-label={t("search.label")}>
               <SearchIcon />
             </Link>
           </div>
@@ -196,7 +204,7 @@ export default function Header() {
               {lang === "ta" ? "EN" : "தமிழ்"}
             </button>
 
-            <Link to="/search" className="site-header__search-mini" aria-label="Search">
+            <Link to="/search" className="site-header__search-mini" aria-label={t("search.label")}>
               <SearchIcon />
             </Link>
           </div>
@@ -215,27 +223,28 @@ export default function Header() {
 
                 {MEGA[openPanel].isForm ? (
                   <div className="mega-panel__form">
-                    <NewsletterForm variant="dropdown" />
+                    <NewsletterForm variant="dropdown" english />
                   </div>
                 ) : (
                   <>
                     <div className="mega-panel__grid">
                       {(openPanel === "Resources"
                         ? resourceCategories.map((c) => ({
+                            key: undefined,
+                            isCat: true,
+                            id: c.slug,
                             label: c.name,
                             to: `/resources?category=${c.slug}`,
-                            desc:
-                              c.description ||
-                              `${c.postCount} resource${
-                                c.postCount === 1 ? "" : "s"
-                              } published`,
+                            desc: c.description
+                              ? tr(c.description)
+                              : t("menu.resources.countPublished").replace("{n}", c.postCount),
                           }))
                         : MEGA[openPanel].items
                       ).map((it) => (
                         <Link
-                          key={it.label}
+                          key={it.id || it.label}
                           to={it.to}
-                          className="mega-panel__item"
+                          className={`mega-panel__item${it.isCat && catPending ? " is-translating" : ""}`}
                           onClick={() => setOpenPanel(null)}
                         >
                           <span className="mega-panel__item-title">
@@ -309,19 +318,22 @@ export default function Header() {
                   <div className="mobile-nav__submenu">
                     {MEGA[label].isForm ? (
                       <div className="mobile-nav__submenu-form">
-                        <NewsletterForm variant="dropdown" />
+                        <NewsletterForm variant="dropdown" english />
                       </div>
                     ) : (
                       (label === "Resources"
                         ? resourceCategories.map((c) => ({
+                            isCat: true,
+                            id: c.slug,
                             label: c.name,
                             to: `/resources?category=${c.slug}`,
                           }))
                         : MEGA[label].items
                       ).map((it) => (
                         <Link
-                          key={it.label}
+                          key={it.id || it.label}
                           to={it.to}
+                          className={it.isCat && catPending ? "is-translating" : undefined}
                           onClick={() => setMenuOpen(false)}
                         >
                           {it.key ? t(`menu.${it.key}.label`) : it.label}

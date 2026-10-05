@@ -3,7 +3,8 @@ import { Link, useParams } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
 import { videosApi } from "../api/endpoints";
 import { fileUrl } from "../api/client";
-import { youtubeEmbedUrl } from "../utils/text";
+import { excerpt, youtubeEmbedUrl } from "../utils/text";
+import ShareButton from "../components/Share/ShareButton";
 import { Loading, ErrorMessage } from "../components/common/StateMessage";
 import { useLanguage } from "../context/LanguageContext";
 import useSectionTranslator from "../hooks/useSectionTranslator";
@@ -19,15 +20,27 @@ function VideoDetail({ id }) {
   if (!video) return null;
 
   const embed = video.type === "YOUTUBE" ? youtubeEmbedUrl(video.youtubeUrl) : null;
+  // Share preview image: uploaded thumbnail, else the YouTube thumbnail
+  const ytId = embed ? embed.split("/embed/")[1] : null;
+  const shareImage = video.thumbnail
+    ? fileUrl(video.thumbnail)
+    : ytId
+    ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`
+    : "";
 
   return (
     <article className={`page-shell article${pending ? " is-translating" : ""}`}>
       <div className="container article__head">
-        <p className="eyebrow">{t("videos.eyebrowDetail")} · {tr(video.business.industry)}</p>
+        <p className="eyebrow">{t("videos.eyebrowDetail")} · {video.business.industry}</p>
         <h1 className="article__headline">{tr(video.title)}</h1>
         <div className="article__byline">
           <div className="article__author-avatar">{video.business.companyName.charAt(0)}</div>
           <div><p className="article__author-name">{video.business.companyName}</p></div>
+          <ShareButton
+            title={tr(video.title)}
+            text={video.description ? tr(excerpt(video.description, 160)) : ""}
+            image={shareImage}
+          />
         </div>
       </div>
 

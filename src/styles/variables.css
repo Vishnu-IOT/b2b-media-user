@@ -181,7 +181,7 @@ button { font-family: inherit; cursor: pointer; }
   font-weight: 500;
   border: 1px solid transparent;
   transition: background .2s var(--ease), color .2s var(--ease), border-color .2s var(--ease), transform .1s;
-  white-space: nowrap;
+  /* white-space: nowrap; */
 }
 .btn:active { transform: scale(0.98); }
 .btn-primary { background: var(--color-ink); color: #fff; border-color: var(--color-ink); }

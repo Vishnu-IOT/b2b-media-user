@@ -19,7 +19,7 @@ export default function StrategyCard({ strategy }) {
         )}
       </div>
       <div className="strategy-card__body">
-        <span className="tag">{tr(strategy.business.industry)}</span>
+        <span className="tag">{strategy.business.industry}</span>
         <h4>{tr(strategy.title)}</h4>
         <p>{tr(excerpt(strategy.content, 110))}</p>
         <span className="strategy-card__meta">{strategy.business.companyName} · {readingTime(strategy.content, t)}</span>

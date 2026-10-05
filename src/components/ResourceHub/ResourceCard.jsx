@@ -20,7 +20,7 @@ export default function ResourceCard({ resource }) {
         <span className="tag resource-card__type">{kind}</span>
       </div>
       <div className="resource-card__body">
-        <span className="resource-card__category">{tr(resource.category?.name)}</span>
+        <span className="resource-card__category">{resource.category?.name}</span>
         <h4>{tr(resource.title)}</h4>
         {resource.summary && <p>{tr(resource.summary)}</p>}
       </div>

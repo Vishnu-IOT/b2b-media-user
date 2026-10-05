@@ -17,8 +17,8 @@ export default function BusinessCard({ business }) {
       </div>
       <div className="business-card__body">
         <div className="business-card__meta">
-          {business.industry && <span className="tag">{tr(business.industry)}</span>}
-          <span className="business-card__location">{tr(business.location)}</span>
+          {business.industry && <span className="tag">{business.industry}</span>}
+          <span className="business-card__location">{business.location}</span>
         </div>
         <h4>{business.companyName}</h4>
         {business.description && <p>{tr(business.description)}</p>}

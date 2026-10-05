@@ -3,7 +3,8 @@ import { Link, useParams, useSearchParams } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
 import { resourceCategoriesApi, resourcesApi } from "../api/endpoints";
 import { fileUrl } from "../api/client";
-import { youtubeEmbedUrl, toParagraphs } from "../utils/text";
+import { excerpt, youtubeEmbedUrl, toParagraphs } from "../utils/text";
+import ShareButton from "../components/Share/ShareButton";
 
 import { Loading, ErrorMessage, Empty } from "../components/common/StateMessage";
 import ResourceCard from "../components/ResourceHub/ResourceCard";
@@ -109,7 +110,7 @@ function ResourcesIndex() {
           marginBottom: 24,
         }}
       >
-        {selectedCategory ? tr(selectedCategory.name) : t("resources.title")}
+        {selectedCategory ? selectedCategory.name : t("resources.title")}
       </h1>
 
       {/* Dynamic Categories */}
@@ -142,7 +143,7 @@ function ResourcesIndex() {
                 handleCategoryChange(category.slug)
               }
             >
-              {tr(category.name)}
+              {category.name}
             </button>
           ))}
         </div>
@@ -158,7 +159,7 @@ function ResourcesIndex() {
       {!loading && !error && items.length === 0 && (
         <Empty>
           {selectedCategory
-            ? t("resources.emptyCategory").replace("{name}", tr(selectedCategory.name))
+            ? t("resources.emptyCategory").replace("{name}", selectedCategory.name)
             : t("resources.empty")}
         </Empty>
       )}
@@ -224,7 +225,7 @@ function ResourcePostDetail({ idOrSlug }) {
     <article className={`page-shell article${pending ? " is-translating" : ""}`}>
       <div className="container article__head">
         <p className="eyebrow">
-          {tr(post.category?.name)}
+          {post.category?.name}
         </p>
 
         <h1 className="article__headline">
@@ -236,6 +237,13 @@ function ResourcePostDetail({ idOrSlug }) {
             {tr(post.summary)}
           </p>
         )}
+
+        <ShareButton
+          block
+          title={tr(post.title)}
+          text={tr(post.summary || excerpt(post.content, 160))}
+          images={[fileUrl(post.coverImage), fileUrl(post.coverImage2)]}
+        />
       </div>
 
       {post.coverImage && (

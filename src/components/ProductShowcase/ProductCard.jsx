@@ -30,7 +30,7 @@ export default function ProductCard({ product }) {
       </div>
       <div className="product-card__body">
         <p className="product-card__company">
-          {product.business.companyName} · {tr(product.business.location)}
+          {product.business.companyName} · {product.business.location}
         </p>
         <h4>{tr(product.name)}</h4>
         {product.description && (

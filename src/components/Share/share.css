@@ -1,0 +1,91 @@
+/* Share button — everything is scoped with the sh- prefix */
+.sh-wrap {
+  position: relative;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.sh-wrap--block {
+  margin-left: 0;
+  display: inline-block;
+}
+.sh-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 16px;
+  border: 1px solid var(--color-line, #e3e3e3);
+  border-radius: 999px;
+  background: var(--color-bg, #fff);
+  color: var(--color-ink, #1a1a1a);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, transform 0.1s;
+}
+.sh-btn:hover {
+  border-color: var(--color-accent, #e62e2d);
+  color: var(--color-accent, #e62e2d);
+}
+.sh-btn:active { transform: scale(0.97); }
+.sh-btn[aria-busy="true"] { opacity: 0.7; pointer-events: none; }
+.sh-btn:focus-visible,
+.sh-item:focus-visible {
+  outline: 2px solid var(--color-accent, #e62e2d);
+  outline-offset: 2px;
+}
+
+.sh-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 60;
+  min-width: 210px;
+  padding: 6px;
+  background: var(--color-bg, #fff);
+  border: 1px solid var(--color-line, #e3e3e3);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
+  animation: sh-pop 0.14s ease-out;
+}
+.sh-wrap--block .sh-menu { left: 0; right: auto; }
+
+.sh-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--color-ink, #1a1a1a);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.sh-item:hover {
+  background: var(--color-accent-tint, #fdecec);
+  color: var(--color-accent-dark, #c41f1e);
+}
+
+@keyframes sh-pop {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 620px) {
+  .sh-btn { height: 34px; padding: 0 12px; }
+  .sh-btn span { display: none; } /* icon-only on small phones; label stays for screen readers */
+  .sh-btn { width: 34px; padding: 0; justify-content: center; }
+  .sh-menu { min-width: 190px; }
+}
+
+/* Show the status text ("Preparing…" / "Ready — tap again") even in the icon-only mobile layout */
+@media (max-width: 620px) {
+  .sh-btn.sh-btn--note { width: auto; padding: 0 12px; }
+  .sh-btn.sh-btn--note span { display: inline; }
+}

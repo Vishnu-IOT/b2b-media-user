@@ -9,8 +9,10 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  * variant="navbar"  -> compact inline pill (input + icon button), used in the header
  * variant="footer"  -> full block with heading, blurb, input + button, used in the footer
  */
-export default function NewsletterForm({ variant = "footer" }) {
-  const { t } = useLanguage();
+export default function NewsletterForm({ variant = "footer", english = false }) {
+  const { t: tCtx, tEn } = useLanguage();
+  const t = english ? tEn : tCtx; // english: keep this form in English in every language (navbar/footer)
+  const [consent, setConsent] = useState(true);
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState("idle"); // idle | sending | success | error
   const [errorMsg, setErrorMsg] = useState("");
@@ -21,6 +23,11 @@ export default function NewsletterForm({ variant = "footer" }) {
     if (!EMAIL_RE.test(email)) {
       setStatus("error");
       setErrorMsg(t("newsletter.invalidEmail"));
+      return;
+    }
+    if (variant === "footer" && !consent) {
+      setStatus("error");
+      setErrorMsg(t("newsletter.consentRequired"));
       return;
     }
     setStatus("sending");
@@ -116,9 +123,9 @@ export default function NewsletterForm({ variant = "footer" }) {
 
   return (
     <div className="newsletter newsletter--footer">
-      <h4>{t("newsletter.heading")}</h4>
-      <p>{t("newsletter.blurb")}</p>
-      <form onSubmit={submit} className="newsletter__row">
+      <h4>{t("footer.buzz")}</h4>
+      <p className="newsletter__blurb">{t("footer.buzzBlurb")}</p>
+      <form onSubmit={submit} className="newsletter__row" noValidate>
         <input
           type="email"
           value={email}
@@ -127,10 +134,14 @@ export default function NewsletterForm({ variant = "footer" }) {
           className="newsletter__input"
           aria-label={t("newsletter.placeholder")}
         />
-        <button type="submit" className="btn btn-accent" disabled={status === "sending"}>
+        <button type="submit" className="newsletter__submit" disabled={status === "sending"}>
           {status === "sending" ? t("newsletter.sending") : t("newsletter.button")}
         </button>
       </form>
+      <label className="newsletter__consent">
+        <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} />
+        <span>{t("newsletter.consent")}</span>
+      </label>
       {status === "success" && <p className="newsletter__ok">{okMsg}</p>}
       {status === "error" && <p className="newsletter__err">{errorMsg}</p>}
     </div>

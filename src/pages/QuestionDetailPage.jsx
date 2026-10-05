@@ -3,7 +3,8 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
 import { questionsApi, answersApi } from "../api/endpoints";
 import { useAuth } from "../context/AuthContext";
-import { formatDate, normalizeText } from "../utils/text";
+import { excerpt, formatDate, normalizeText } from "../utils/text";
+import ShareButton from "../components/Share/ShareButton";
 import { Loading, ErrorMessage } from "../components/common/StateMessage";
 import { useLanguage } from "../context/LanguageContext";
 import useSectionTranslator from "../hooks/useSectionTranslator";
@@ -70,12 +71,19 @@ export default function QuestionDetailPage() {
     <div className={`page-shell container${pending ? " is-translating" : ""}`} style={{ paddingTop: "calc(var(--header-h) + 52px)", paddingBottom: 90, maxWidth: 760 }}>
       <Link to="/community" className="btn-link" style={{ marginBottom: 26, display: "inline-block" }}>{t("community.back")}</Link>
       <div className="qa-card__meta">
-        {question.category && <span className="tag">{tr(question.category)}</span>}
+        {question.category && <span className="tag">{question.category}</span>}
         <span>{formatDate(question.createdAt, lang)}</span>
       </div>
       <h1 className="section-heading" style={{ fontSize: "clamp(26px,3.4vw,38px)", margin: "14px 0" }}>{tr(question.title)}</h1>
       <p style={{ color: "var(--color-ink-soft)", lineHeight: 1.7, marginBottom: 10, whiteSpace: "pre-line" }}>{tr(normalizeText(question.description))}</p>
       <p className="section-sub" style={{ marginBottom: 30 }}>{t("card.askedBy")} {question.user.name}</p>
+      <div style={{ marginBottom: 30 }}>
+        <ShareButton
+          block
+          title={tr(question.title)}
+          text={question.description ? tr(excerpt(question.description, 160)) : ""}
+        />
+      </div>
 
       <h3 style={{ fontFamily: "var(--font-display)", fontSize: 20, marginBottom: 10 }}>
         {answers.length} {answers.length === 1 ? t("card.answer") : t("card.answers")}

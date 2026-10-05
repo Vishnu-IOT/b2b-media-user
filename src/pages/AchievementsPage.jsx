@@ -5,6 +5,7 @@ import { achievementsApi } from "../api/endpoints";
 import { fileUrl } from "../api/client";
 import { excerpt, formatDate, readingTime, toParagraphs } from "../utils/text";
 import ArticleBody from "../components/common/ArticleBody";
+import ShareButton from "../components/Share/ShareButton";
 import { useLanguage } from "../context/LanguageContext";
 import useSectionTranslator from "../hooks/useSectionTranslator";
 import { Loading, ErrorMessage } from "../components/common/StateMessage";
@@ -51,7 +52,7 @@ function AchievementDetail({ id }) {
     <article className={`page-shell article${pending ? " is-translating" : ""}`}>
       <div className="container article__head">
         <p className="eyebrow">
-          {t("achievements.eyebrowDetail")}{achievement.business.industry ? ` · ${tr(achievement.business.industry)}` : ""}
+          {t("achievements.eyebrowDetail")}{achievement.business.industry ? ` · ${achievement.business.industry}` : ""}
         </p>
         <h1 className="article__headline">{tr(achievement.title)}</h1>
         {bodyText && <p className="article__dek">{tr(excerpt(bodyText, 160))}</p>}
@@ -65,6 +66,11 @@ function AchievementDetail({ id }) {
               {formatDate(achievement.awardDate || achievement.publishedAt || achievement.createdAt, lang)}
             </p>
           </div>
+          <ShareButton
+            title={tr(achievement.title)}
+            text={bodyText ? tr(excerpt(bodyText, 160)) : ""}
+            images={[fileUrl(achievement.image), fileUrl(achievement.image2)]}
+          />
         </div>
       </div>
 

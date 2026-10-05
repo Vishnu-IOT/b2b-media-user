@@ -33,7 +33,7 @@ export default function BusinessProfile({ business }) {
             {business.logo && <img className="profile-hero__logo" src={fileUrl(business.logo)} alt={`${business.companyName} logo`} />}
             <div>
               <h1>{business.companyName}</h1>
-              <p>{tr(business.industry)}{business.location ? ` · ${tr(business.location)}` : ""}</p>
+              <p>{business.industry}{business.location ? ` · ${business.location}` : ""}</p>
             </div>
           </div>
         </div>
@@ -109,7 +109,7 @@ export default function BusinessProfile({ business }) {
               <Link to={`/enquiries/${e.id}`} key={e.id} className="profile-item">
                 <h4>{tr(e.title)}</h4>
                 <p>{tr(e.description)}</p>
-                <span className="profile-item__meta">{tr(e.category)}{e.location ? ` · ${tr(e.location)}` : ""}</span>
+                <span className="profile-item__meta">{e.category}{e.location ? ` · ${e.location}` : ""}</span>
               </Link>
             )} />
           )}

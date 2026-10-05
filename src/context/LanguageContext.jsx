@@ -83,9 +83,16 @@ export function LanguageProvider({ children }) {
     };
     const dict = dictionaries[lang] || dictionaries.ta || {};
     const fallback = dictionaries.ta || {};
-    const t = (key) => (dict[key] !== undefined ? dict[key] : fallback[key] !== undefined ? fallback[key] : key);
+    // Static UI text (labels, buttons, View/Explore, headings) is ALWAYS English. Only post content
+    // (title, description, summary, body) is translated, via useSectionTranslator().
+    const enOnly = dictionaries.en || {};
+    const t = (key) => (enOnly[key] !== undefined ? enOnly[key] : dict[key] !== undefined ? dict[key] : fallback[key] !== undefined ? fallback[key] : key);
     const toggleLang = () => switchLanguage(lang === "ta" ? "en" : "ta");
-    return { lang, switchLanguage, toggleLang, t, loaded };
+    // tEn(): always English, whatever the current language is. The navbar, bottom bar and footer use it
+    // so they stay in English while the page content switches between Tamil and English.
+    const enDict = dictionaries.en || {};
+    const tEn = (key) => (enDict[key] !== undefined ? enDict[key] : t(key));
+    return { lang, switchLanguage, toggleLang, t, tEn, loaded };
   }, [lang, dictionaries, loaded]);
 
   // First visit only (no cached copy yet): show a plain spinner for a moment instead of an app full of

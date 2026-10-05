@@ -2,7 +2,8 @@ import React from "react";
 import { Link, useParams } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
 import { enquiriesApi } from "../api/endpoints";
-import { formatDate, normalizeText } from "../utils/text";
+import { excerpt, formatDate, normalizeText } from "../utils/text";
+import ShareButton from "../components/Share/ShareButton";
 import { Loading, ErrorMessage } from "../components/common/StateMessage";
 import { useLanguage } from "../context/LanguageContext";
 import useSectionTranslator from "../hooks/useSectionTranslator";
@@ -20,14 +21,18 @@ function EnquiryDetail({ id }) {
   return (
     <article className={`page-shell article${pending ? " is-translating" : ""}`}>
       <div className="container article__head">
-        <p className="eyebrow">{t("enquiries.eyebrowDetail")} {enquiry.category ? `· ${tr(enquiry.category)}` : ""}</p>
+        <p className="eyebrow">{t("enquiries.eyebrowDetail")} {enquiry.category ? `· ${enquiry.category}` : ""}</p>
         <h1 className="article__headline">{tr(enquiry.title)}</h1>
         <div className="article__byline">
           <div className="article__author-avatar">{enquiry.business.companyName.charAt(0)}</div>
           <div>
             <p className="article__author-name">{enquiry.business.companyName}</p>
-            <p className="article__author-meta">{tr(enquiry.location) || t("enquiries.locationNotSpecified")} · {t("enquiries.posted")} {formatDate(enquiry.createdAt, lang)}</p>
+            <p className="article__author-meta">{enquiry.location || t("enquiries.locationNotSpecified")} · {t("enquiries.posted")} {formatDate(enquiry.createdAt, lang)}</p>
           </div>
+          <ShareButton
+            title={tr(enquiry.title)}
+            text={enquiry.description ? tr(excerpt(enquiry.description, 160)) : ""}
+          />
         </div>
       </div>
       <div className="container article__body">

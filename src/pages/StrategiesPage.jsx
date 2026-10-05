@@ -5,6 +5,7 @@ import { strategiesApi } from "../api/endpoints";
 import { fileUrl } from "../api/client";
 import { excerpt, formatDate, readingTime, toParagraphs } from "../utils/text";
 import ArticleBody from "../components/common/ArticleBody";
+import ShareButton from "../components/Share/ShareButton";
 import { useLanguage } from "../context/LanguageContext";
 import useSectionTranslator from "../hooks/useSectionTranslator";
 import { Loading, ErrorMessage } from "../components/common/StateMessage";
@@ -24,7 +25,7 @@ function StrategyDetail({ id }) {
   return (
     <article className={`page-shell article${pending ? " is-translating" : ""}`}>
       <div className="container article__head">
-        <p className="eyebrow">{t("strategies.eyebrowDetail")} · {tr(strategy.business.industry)}</p>
+        <p className="eyebrow">{t("strategies.eyebrowDetail")} · {strategy.business.industry}</p>
         <h1 className="article__headline">{tr(strategy.title)}</h1>
         <p className="article__dek">{tr(excerpt(strategy.content, 160))}</p>
         <div className="article__byline">
@@ -33,6 +34,11 @@ function StrategyDetail({ id }) {
             <p className="article__author-name">{strategy.business.companyName}</p>
             <p className="article__author-meta">{readingTime(strategy.content, t)} · {formatDate(strategy.publishedAt || strategy.createdAt, lang)}</p>
           </div>
+          <ShareButton
+            title={tr(strategy.title)}
+            text={tr(excerpt(strategy.content, 160))}
+            images={[fileUrl(strategy.coverImage), fileUrl(strategy.coverImage2)]}
+          />
         </div>
       </div>
       {strategy.coverImage && (

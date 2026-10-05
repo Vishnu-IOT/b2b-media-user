@@ -5,6 +5,7 @@ import { storiesApi } from "../api/endpoints";
 import { fileUrl } from "../api/client";
 import { excerpt, formatDate, readingTime, toParagraphs } from "../utils/text";
 import ArticleBody from "../components/common/ArticleBody";
+import ShareButton from "../components/Share/ShareButton";
 import { useLanguage } from "../context/LanguageContext";
 import useSectionTranslator from "../hooks/useSectionTranslator";
 import { Loading, ErrorMessage, Empty } from "../components/common/StateMessage";
@@ -23,7 +24,7 @@ function RelatedStrip({ currentId, items }) {
           <Link to={`/stories/${s.id}`} key={s.id} className="related-strip__item">
             {s.coverImage && <img src={fileUrl(s.coverImage)} alt={s.business.companyName} />}
             <div>
-              <span>{tr(s.business.industry)}</span>
+              <span>{s.business.industry}</span>
               <h4>{tr(s.title)}</h4>
             </div>
           </Link>
@@ -48,7 +49,7 @@ function StoryDetail({ id }) {
   return (
     <article className={`page-shell article${pending ? " is-translating" : ""}`}>
       <div className="container article__head">
-        <p className="eyebrow">{tr(story.business.industry)} · {tr(story.business.location)}</p>
+        <p className="eyebrow">{story.business.industry} · {story.business.location}</p>
         <h1 className="article__headline">{tr(story.title)}</h1>
         <p className="article__dek">{tr(excerpt(story.content, 160))}</p>
         <div className="article__byline">
@@ -57,6 +58,11 @@ function StoryDetail({ id }) {
             <p className="article__author-name">{story.business.companyName}</p>
             <p className="article__author-meta">{readingTime(story.content, t)} · {formatDate(story.publishedAt || story.createdAt, lang)}</p>
           </div>
+          <ShareButton
+            title={tr(story.title)}
+            text={tr(excerpt(story.content, 160))}
+            images={[fileUrl(story.coverImage), fileUrl(story.coverImage2)]}
+          />
         </div>
       </div>
 
@@ -109,7 +115,7 @@ function StoriesIndex() {
               <div className="stories-index-card__placeholder">{s.business.companyName.charAt(0)}</div>
             )}
             <div>
-              <p className="eyebrow" style={{ marginBottom: 10 }}>{tr(s.business.industry)}</p>
+              <p className="eyebrow" style={{ marginBottom: 10 }}>{s.business.industry}</p>
               <h4>{tr(s.title)}</h4>
               <p className="stories-index-card__meta">{s.business.companyName} · {readingTime(s.content, t)}</p>
             </div>

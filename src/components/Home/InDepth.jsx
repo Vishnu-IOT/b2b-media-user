@@ -32,7 +32,7 @@ export default function InDepth() {
             <div className="ys-depth__list">
               {list.map((s) => (
                 <Link to={`/strategies/${s.id}`} className="ys-text-item" key={s.id}>
-                  <span className="eyebrow">{s.business.industry ? tr(s.business.industry) : t("home.fallback.inDepth")}</span>
+                  <span className="eyebrow">{s.business.industry ? s.business.industry : t("home.fallback.inDepth")}</span>
                   <h3>{tr(s.title)}</h3>
                   <span className="ys-author">{s.business.companyName}</span>
                 </Link>
@@ -47,7 +47,7 @@ export default function InDepth() {
                   <div className="ys-card__placeholder">{feature.business.companyName.charAt(0)}</div>
                 )}
               </div>
-              <span className="eyebrow">{feature.business.industry ? tr(feature.business.industry) : t("home.fallback.inDepth")}</span>
+              <span className="eyebrow">{feature.business.industry ? feature.business.industry : t("home.fallback.inDepth")}</span>
               <h3>{tr(feature.title)}</h3>
               <span className="ys-author">{feature.business.companyName}</span>
             </Link>

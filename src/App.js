@@ -4,6 +4,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { LanguageProvider } from "./context/LanguageContext";
 import Header from "./components/Header/Header";
 import Footer from "./components/Footer/Footer";
+import BottomNav from "./components/BottomNav/BottomNav";
 import ScrollToTop from "./utils/ScrollToTop";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
 
@@ -26,6 +27,9 @@ import BusinessesPage from "./pages/BusinessesPage";
 import AccountPage from "./pages/AccountPage";
 import DashboardPage from "./pages/DashboardPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import AboutPage from "./pages/info/AboutPage";
+import PrivacyPage from "./pages/info/PrivacyPage";
+import TermsPage from "./pages/info/TermsPage";
 
 export default function App() {
   return (
@@ -91,10 +95,15 @@ export default function App() {
               }
             />
 
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
+
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
         <Footer />
+        <BottomNav />
       </BrowserRouter>
       </LanguageProvider>
     </AuthProvider>

@@ -50,7 +50,7 @@ export default function Spotlight() {
                   </div>
                   <span className="eyebrow">
                     {a.business.industry
-                      ? tr(a.business.industry)
+                      ? a.business.industry
                       : t("home.fallback.achievement")}
                   </span>
                   <h3>{tr(a.title)}</h3>

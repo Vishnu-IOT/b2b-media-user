@@ -12,7 +12,7 @@ export default function QuestionCard({ q }) {
     <Link to={`/community/${q.id}`} className={`qa-card${pending ? " is-translating" : ""}`}>
       <div className="qa-card__body">
         <div className="qa-card__meta">
-          {q.category && <span className="tag">{tr(q.category)}</span>}
+          {q.category && <span className="tag">{q.category}</span>}
           <span>{formatDate(q.createdAt, lang)}</span>
         </div>
         <h4>{tr(q.title)}</h4>

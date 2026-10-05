@@ -41,7 +41,7 @@ export default function ResourcesBlock() {
                     <Img src={r.coverImage} label={r.category?.name?.charAt(0)} cls="ys-thumb-fallback" />
                   </div>
                   <div>
-                    <span className="ys-row__cat">{r.category?.name ? tr(r.category.name) : t("home.fallback.resource")}</span>
+                    <span className="ys-row__cat">{r.category?.name ? r.category.name : t("home.fallback.resource")}</span>
                     <h3>{tr(r.title)}</h3>
                     <span className="ys-author">{t("home.teamVartha")}</span>
                   </div>
@@ -54,14 +54,14 @@ export default function ResourcesBlock() {
                 <div className="ys-feature__image">
                   <Img src={feature.coverImage} label={feature.category?.name?.charAt(0)} cls="ys-card__placeholder" />
                 </div>
-                <span className="eyebrow">{feature.category?.name ? tr(feature.category.name) : t("home.fallback.resource")}</span>
+                <span className="eyebrow">{feature.category?.name ? feature.category.name : t("home.fallback.resource")}</span>
                 <h3>{tr(feature.title)}</h3>
               </Link>
             )}
 
             {side && (
               <Link to={`/resources/${side.slug}`} className="ys-tall">
-                <span className="eyebrow">{side.category?.name ? tr(side.category.name) : t("home.fallback.resource")}</span>
+                <span className="eyebrow">{side.category?.name ? side.category.name : t("home.fallback.resource")}</span>
                 <h3>{tr(side.title)}</h3>
                 <span className="ys-author">{t("home.teamVartha")}</span>
               </Link>

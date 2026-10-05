@@ -24,8 +24,10 @@ import { getCached, isSettled, needsTranslation, nextRetryIn, translateMany } fr
  */
 const HIDE_LIMIT_MS = 6000; // longest a section stays hidden while waiting for its translation
 
-export default function useSectionTranslator() {
-  const { lang } = useLanguage();
+export default function useSectionTranslator(forceLang) {
+  // forceLang: pass "en" for parts of the page (navbar, footer) that must stay English in every language.
+  const { lang: ctxLang } = useLanguage();
+  const lang = forceLang || ctxLang;
   const [, setVersion] = useState(0);
   const [pending, setPending] = useState(false);
   const [timedOut, setTimedOut] = useState(false); // translation is taking too long: stop hiding the text
